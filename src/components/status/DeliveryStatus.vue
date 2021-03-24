@@ -31,10 +31,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  /*flex: 1;*/
-  /*width: 50%;*/
-}
 .header {
   font-size: 20px;
 }

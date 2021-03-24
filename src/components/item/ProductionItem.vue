@@ -3,7 +3,7 @@
     <div class="slot-num">Production Slot #{{ num + 1 }}</div>
     <div class="slot-details">
       <div class="slot-image">
-        <img class="slot-image" src="../../../src/images/Hamburger.jpg" />
+        <img class="slot-image" :src="image" />
       </div>
       <div class="slot-details-product">
         <div><span class="attribute">Order ID:</span> {{ orderID }}</div>

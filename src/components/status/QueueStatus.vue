@@ -1,7 +1,12 @@
 <template>
   <div class="container">
     <span class="header">Queue Status</span>
-    <queue-item v-for="(queue,index) in queues" :num="index" :key="index" :count="queue.count">
+    <queue-item
+      v-for="(queue, index) in queues"
+      :num="index"
+      :key="index"
+      :count="queue.count"
+    >
     </queue-item>
   </div>
 </template>
@@ -12,23 +17,22 @@ import QueueItem from "@/components/item/QueueItem";
 export default {
   name: "QueueStatus",
   components: {
-    QueueItem
+    QueueItem,
   },
 
   data: function () {
     return {
-      queues: [{count: "5"}, {count: "4"}, {count: "5"} ]
-    }
+      queues: [{ count: "5" }, { count: "4" }, { count: "5" }],
+    };
   },
-}
+};
 </script>
 
 <style scoped>
-.container{
-
+.container {
 }
 
-.header{
+.header {
   font-size: 20px;
 }
 </style>

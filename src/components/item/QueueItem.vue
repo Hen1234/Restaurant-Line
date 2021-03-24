@@ -1,8 +1,8 @@
 <template>
   <div class="queue">
     <div class="queue-name">Queue #{{ num + 1 }}</div>
-<!--    <div class="queue-name">Queue #{{ num + 1 }} {{ count }}</div>-->
-<!--    <queue-logo v-for="(logo, index) in logoArr" :key="index"></queue-logo>-->
+    <!--    <div class="queue-name">Queue #{{ num + 1 }} {{ count }}</div>-->
+    <!--    <queue-logo v-for="(logo, index) in logoArr" :key="index"></queue-logo>-->
     <queue-logo></queue-logo>
     <queue-logo></queue-logo>
     <queue-logo></queue-logo>
@@ -33,9 +33,8 @@ export default {
   height: 30px;
   display: flex;
   align-items: center;
-
 }
-.queue-name{
+.queue-name {
   margin-left: 15px;
 }
 </style>

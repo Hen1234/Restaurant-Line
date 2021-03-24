@@ -5,6 +5,7 @@
       v-for="(slot, index) in slots"
       :key="index"
       :num="index"
+      :image="slot.image"
       :orderID="slot.orderID"
       :producing="slot.producing"
       :time="slot.time"
@@ -23,14 +24,14 @@ export default {
     return {
       slots: [
         {
-          image: "../../../src/images/Hamburger.jpg",
+          image: "/img/Hamburger.9f33cc71.jpg",
           orderID: "62",
           producing: "Hamburger",
           time: "01:15:00",
           status: "6",
         },
         {
-          image: "../../../src/images/Salad.jpg",
+          image: "/img/Salad.bcb2ab29.jpg",
           orderID: "63",
           producing: "Salad",
           time: "00:30:00",

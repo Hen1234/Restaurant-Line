@@ -39,6 +39,7 @@ export default class Home extends Vue {
   display: flex;
   flex-direction: column;
   flex: 1;
+  position: relative;
 }
 
 .menu-and-content {

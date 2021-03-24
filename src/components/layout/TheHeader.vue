@@ -9,8 +9,6 @@
 
 <script>
 import logo from "@/components/logo/HeaderLogo.vue";
-import { Component } from "vue-property-decorator";
-import Logo from "@/components/logo/HeaderLogo";
 
 export default {
   components: {

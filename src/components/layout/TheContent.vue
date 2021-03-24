@@ -3,9 +3,7 @@
     <queue-status></queue-status>
     <production-status></production-status>
     <delivery-status></delivery-status>
-
   </div>
-
 </template>
 
 <script>
@@ -17,10 +15,9 @@ export default {
   components: {
     QueueStatus,
     ProductionStatus,
-    DeliveryStatus
-  }
-
-}
+    DeliveryStatus,
+  },
+};
 </script>
 
 <style scoped>
@@ -29,6 +26,5 @@ export default {
   flex-direction: column;
   margin: 10px;
   flex: 1;
-
 }
 </style>
