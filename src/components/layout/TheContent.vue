@@ -6,18 +6,21 @@
   </div>
 </template>
 
-<script>
-import QueueStatus from "@/components/status/QueueStatus";
-import ProductionStatus from "@/components/status/ProductionStatus";
-import DeliveryStatus from "@/components/status/DeliveryStatus";
+<script lang="ts">
+import ProductionStatus from "@/components/status/ProductionStatus.vue";
+import DeliveryStatus from "@/components/status/DeliveryStatus.vue";
+import { Component, Vue } from "vue-property-decorator";
+import QueueStatus from "@/components/status/QueueStatus.vue";
 
-export default {
+@Component({
+  name: "TheContent",
   components: {
     QueueStatus,
     ProductionStatus,
     DeliveryStatus,
   },
-};
+})
+export default class TheContent extends Vue {}
 </script>
 
 <style scoped>

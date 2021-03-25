@@ -7,11 +7,15 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
+@Component({
   name: "MenuItem",
-  props: ["hover", "label"],
-};
+})
+export default class MenuItem extends Vue {
+  @Prop() hover!: boolean;
+  @Prop() label!: string;
+}
 </script>
 
 <style scoped lang="scss">

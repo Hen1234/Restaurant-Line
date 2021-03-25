@@ -14,20 +14,22 @@
   </div>
 </template>
 
-<script>
-import DeliveryItem from "@/components/item/DeliveryItem";
-export default {
+<script lang="ts">
+import DeliveryItem from "@/components/item/DeliveryItem.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { Delivery } from "@/types/Delivery.ts";
+@Component({
   name: "DeliveryStatus",
-  components: { DeliveryItem },
-  data: function () {
-    return {
-      deliveries: [
-        { orderID: "51", time: "01:15:00", inDelivery: "true" },
-        { orderID: "52", time: "00:25:00", inDelivery: "true" },
-      ],
-    };
+  components: {
+    DeliveryItem,
   },
-};
+})
+export default class DeliveryStatus extends Vue {
+  private deliveries: Array<Delivery> = [
+    { orderID: 51, time: "01:15:00", inDelivery: true },
+    { orderID: 52, time: "00:25:00", inDelivery: true },
+  ];
+}
 </script>
 
 <style scoped>

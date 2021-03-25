@@ -15,19 +15,23 @@
   </div>
 </template>
 
-<script>
-import MenuItem from "@/components/item/MenuItem";
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import MenuItem from "@/components/item/MenuItem.vue";
 
-export default {
+@Component({
+  name: "TheMenu",
   components: {
     MenuItem,
   },
-  data: function () {
-    return {
-      hover: false,
-    };
-  },
-};
+})
+export default class TheMenu extends Vue {
+  public hover: boolean;
+  constructor() {
+    super();
+    this.hover = false;
+  }
+}
 </script>
 
 <style scoped lang="scss">

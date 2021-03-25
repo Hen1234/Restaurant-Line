@@ -24,11 +24,19 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
+@Component({
   name: "ProductionItem",
-  props: ["num", "image", "orderID", "producing", "time", "status"],
-};
+})
+export default class ProductionItem extends Vue {
+  @Prop() num!: number;
+  @Prop() image!: string;
+  @Prop() orderID!: number;
+  @Prop() producing!: string;
+  @Prop() time!: string;
+  @Prop() status!: string;
+}
 </script>
 
 <style scoped lang="scss">

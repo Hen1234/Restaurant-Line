@@ -1,20 +1,23 @@
 <template>
   <div class="container">
     <div class="logo">
-      <logo></logo>
+      <header-logo></header-logo>
     </div>
     <div class="header-text">Restaurant Line</div>
   </div>
 </template>
 
-<script>
-import logo from "@/components/logo/HeaderLogo.vue";
+<script lang="ts">
+import HeaderLogo from "@/components/logo/HeaderLogo.vue";
+import { Component, Vue } from "vue-property-decorator";
 
-export default {
+@Component({
+  name: "TheHeader",
   components: {
-    logo,
+    HeaderLogo,
   },
-};
+})
+export default class TheHeader extends Vue {}
 </script>
 
 <style scoped>

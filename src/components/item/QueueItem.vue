@@ -11,18 +11,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import QueueLogo from "@/components/logo/QueueLogo";
-export default {
-  name: "queue",
-  components: { QueueLogo },
-  props: ["num", "count"],
-  data: function () {
-    return {
-      // logoArr: [this.count],
-    };
+import { Component, Prop, Vue } from "vue-property-decorator";
+@Component({
+  name: "QueueItem",
+  components: {
+    QueueLogo,
   },
-};
+})
+export default class QueueItem extends Vue {
+  @Prop() num: number;
+  @Prop() count: number;
+}
 </script>
 
 <style scoped>

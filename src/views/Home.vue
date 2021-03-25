@@ -17,10 +17,11 @@ import TheMenu from "@/components/layout/TheMenu.vue";
 import TheContent from "@/components/layout/TheContent.vue";
 
 @Component({
+  name: "Home",
   components: {
     TheHeader,
     TheMenu,
-    TheContent
+    TheContent,
   },
 })
 export default class Home extends Vue {

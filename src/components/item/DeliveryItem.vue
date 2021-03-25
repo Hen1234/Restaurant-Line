@@ -10,11 +10,17 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
+
+@Component({
   name: "DeliveryItem",
-  props: ["orderID", "time", "inDelivery"],
-};
+})
+export default class DeliveryItem extends Vue {
+  @Prop() orderID!: number;
+  @Prop() time!: string;
+  @Prop() inDelivery!: boolean;
+}
 </script>
 
 <style scoped>

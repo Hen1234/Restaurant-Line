@@ -2,10 +2,12 @@
   <div class="queue-logo"></div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+@Component({
   name: "QueueLogo",
-};
+})
+export default class QueueLogo extends Vue {}
 </script>
 
 <style scoped>

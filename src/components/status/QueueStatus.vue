@@ -11,21 +11,19 @@
   </div>
 </template>
 
-<script>
-import QueueItem from "@/components/item/QueueItem";
-
-export default {
+<script lang="ts">
+import QueueItem from "@/components/item/QueueItem.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { Queue } from "@/types/Queue";
+@Component({
   name: "QueueStatus",
   components: {
     QueueItem,
   },
-
-  data: function () {
-    return {
-      queues: [{ count: "5" }, { count: "4" }, { count: "5" }],
-    };
-  },
-};
+})
+export default class QueueStatus extends Vue {
+  private queues: Array<Queue> = [{ count: 5 }, { count: 4 }, { count: 5 }];
+}
 </script>
 
 <style scoped>

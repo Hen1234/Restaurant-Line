@@ -2,10 +2,12 @@
   <img class="logo-image" src="../../../src/images/logo.jpg" />
 </template>
 
-<script>
-export default {
-  name: "logo",
-};
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+@Component({
+  name: "HeaderLogo",
+})
+export default class HeaderLogo extends Vue {}
 </script>
 
 <style scoped>
