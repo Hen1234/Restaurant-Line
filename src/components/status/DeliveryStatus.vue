@@ -26,8 +26,8 @@ import { Delivery } from "@/types/Delivery.ts";
 })
 export default class DeliveryStatus extends Vue {
   private deliveries: Array<Delivery> = [
-    { orderID: 51, time: "01:15:00", inDelivery: true },
-    { orderID: 52, time: "00:25:00", inDelivery: true },
+    { orderID: 51, time: "01:15:00", inDelivery: true, isFailed: false },
+    { orderID: 52, time: "00:25:00", inDelivery: true, isFailed: false },
   ];
 }
 </script>

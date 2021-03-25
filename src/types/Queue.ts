@@ -1,3 +1,5 @@
 export interface Queue {
-  count: number;
+  id: number;
+  maxCount: number;
+  currentCount: number;
 }

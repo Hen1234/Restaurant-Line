@@ -1,8 +1,6 @@
 <template>
   <div class="queue">
     <div class="queue-name">Queue #{{ num + 1 }}</div>
-    <!--    <div class="queue-name">Queue #{{ num + 1 }} {{ count }}</div>-->
-    <!--    <queue-logo v-for="(logo, index) in logoArr" :key="index"></queue-logo>-->
     <queue-logo></queue-logo>
     <queue-logo></queue-logo>
     <queue-logo></queue-logo>
@@ -12,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import QueueLogo from "@/components/logo/QueueLogo";
+import QueueLogo from "@/components/logo/QueueLogo.vue";
 import { Component, Prop, Vue } from "vue-property-decorator";
 @Component({
   name: "QueueItem",
@@ -21,8 +19,8 @@ import { Component, Prop, Vue } from "vue-property-decorator";
   },
 })
 export default class QueueItem extends Vue {
-  @Prop() num: number;
-  @Prop() count: number;
+  @Prop() num!: number;
+  @Prop() count!: number;
 }
 </script>
 

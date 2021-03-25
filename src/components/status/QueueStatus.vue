@@ -22,7 +22,11 @@ import { Queue } from "@/types/Queue";
   },
 })
 export default class QueueStatus extends Vue {
-  private queues: Array<Queue> = [{ count: 5 }, { count: 4 }, { count: 5 }];
+  private queues: Array<Queue> = [
+    { id: 1, maxCount: 10, currentCount: 5 },
+    { id: 2, maxCount: 10, currentCount: 4 },
+    { id: 3, maxCount: 10, currentCount: 5 },
+  ];
 }
 </script>
 

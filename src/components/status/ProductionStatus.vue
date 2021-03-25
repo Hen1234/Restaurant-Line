@@ -30,38 +30,20 @@ export default class ProductionStatus extends Vue {
     {
       image: "/img/Hamburger.9f33cc71.jpg",
       orderID: 62,
-      producing: "Hamburger",
+      producing: { priority: 0, name: "Hamburger", materials: []},
       time: "01:15:00",
       status: "6",
+      isAvailable: true
     },
     {
       image: "/img/Salad.bcb2ab29.jpg",
       orderID: 63,
-      producing: "Salad",
+      producing: { priority: 0, name: "Salad" ,materials: []},
       time: "00:30:00",
       status: "7",
+      isAvailable: true
     },
   ];
-  // data: function () {
-  //   return {
-  //     slots: [
-  //       {
-  //         image: "/img/Hamburger.9f33cc71.jpg",
-  //         orderID: "62",
-  //         producing: "Hamburger",
-  //         time: "01:15:00",
-  //         status: "6",
-  //       },
-  //       {
-  //         image: "/img/Salad.bcb2ab29.jpg",
-  //         orderID: "63",
-  //         producing: "Salad",
-  //         time: "00:30:00",
-  //         status: "7",
-  //       },
-  //     ],
-  //   };
-  // },
 }
 </script>
 
