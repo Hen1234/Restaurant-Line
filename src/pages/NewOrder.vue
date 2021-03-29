@@ -4,7 +4,7 @@
     <!--        <div>{{ getMaterialsList }}</div>-->
     <!--    <div>{{ getMaterialFromList("tomato") }}</div>-->
 
-    <form class="form-container" >
+    <form class="form-container">
       <div class="customer-details">
         <div class="header">Delivery information</div>
         <div class="field">
@@ -80,12 +80,12 @@
       <div class="choose-product">
         <div class="header">Choose products</div>
         <select
-          @change="productChange($event)"
+          @change="productChangeHandler($event)"
           class="field field-input"
           name="selectedProduct"
-          v-model="selectedProduct"
+          :value="selectedProductName"
         >
-          <!--          <option selected="selected">Select Product</option>-->
+          <option selected="selected">Select Product</option>
           <option
             v-for="product in products"
             :key="product.name"
@@ -105,7 +105,10 @@
             </div>
           </div>
           <div class="field materials-option">
-            <div v-for="material in productMaterialsOpt" :key="material.name">
+            <div
+              v-for="material in optionalProductMaterials"
+              :key="material.name"
+            >
               <input
                 :id="material.name"
                 type="checkbox"
@@ -120,12 +123,12 @@
         </div>
       </div>
     </form>
-    <div v-if="hasProduct" class="order-summary">
+    <div v-if="hasProducts" class="order-summary">
       <div class="header">Order summary</div>
       <div
         class="order-details"
         v-for="product in selectedProducts"
-        :key="product.name"
+        :key="product ? product.name : null"
       >
         {{ product.name }} with
         {{ product.materials }}
@@ -143,93 +146,92 @@ import { namespace } from "vuex-class";
 import { Material } from "@/types/Material";
 import { Product } from "@/types/Product";
 import { ProductMaterial } from "@/types/ProductMaterial";
-// const materials = namespace("Materials");
+// import { ProductMaterial } from "@/types/ProductMaterial";
+
+const ProductModule = namespace("product");
+
 @Component({
   name: "NewOrder",
 })
 export default class NewOrder extends Vue {
-  products: Product[];
-  materials: Material[];
-  productMaterials: Material[];
-  productMaterialsOpt: Material[];
-  selectedProduct: string;
-  selectedProducts: string[];
+  @ProductModule.State((state) => state.products) products!: Array<Product>;
+  @ProductModule.State((state) => state.materials) materials!: Array<Material>;
+  selectedProduct: Product | null;
+  selectedProducts: Array<Product>;
   selectedMaterials: string[];
-  hasProduct: boolean;
   constructor() {
     super();
-    this.hasProduct = false;
-    this.selectedProduct = "";
-    this.materials = [
-      { name: "tomato", count: 50 },
-      { name: "onion", count: 100 },
-      { name: "steak", count: 30 },
-      { name: "lettuce", count: 20 },
-      { name: "cucumber", count: 50 },
-      { name: "mushroom", count: 20 },
-    ];
-    this.products = [
-      {
-        name: "Hamburger",
-        priority: 0,
-        materials: [
-          { material: this.materials[0], isMust: true },
-          { material: this.materials[1], isMust: false },
-          { material: this.materials[2], isMust: true },
-          { material: this.materials[3], isMust: false },
-        ],
-      },
-      {
-        name: "Salad",
-        priority: 0,
-        materials: [
-          { material: this.materials[0], isMust: true },
-          { material: this.materials[1], isMust: false },
-          { material: this.materials[3], isMust: true },
-          { material: this.materials[4], isMust: false },
-          { material: this.materials[5], isMust: false },
-        ],
-      },
-    ];
-    this.productMaterials = [];
+    this.selectedProduct = null;
     this.selectedMaterials = [];
     this.selectedProducts = [];
-    this.productMaterialsOpt = [];
   }
 
-  productChange(event): void {
-    this.selectedProduct = event.target.value;
-    const tempArr: ProductMaterial[] = this.products.find(
-      (p) => p.name === event.target.value
-    ).materials;
-    for (let i = 0; i < tempArr.length; i++) {
-      this.productMaterials.push(tempArr[i].material);
+  productChangeHandler(event: Event): void {
+    const selectedProductName = (event.target as HTMLInputElement).value;
+    const selectedProduct = this.products.find(
+      (product) => product.name === selectedProductName
+    );
+
+    if (selectedProduct) {
+      this.selectedProduct = selectedProduct;
     }
-    const matArr = tempArr.filter((mat) => !mat.isMust);
-    for (let i = 0; i < matArr.length; i++) {
-      this.productMaterialsOpt.push(matArr[i].material);
+  }
+
+  get productMaterials(): Array<Material & Pick<ProductMaterial, "isMust">> {
+    if (!this.selectedProduct) {
+      return [];
     }
-    console.dir(this.productMaterials);
+
+    const selectedProductMaterials: ProductMaterial[] = this.selectedProduct
+      .materials;
+
+    return selectedProductMaterials.reduce<
+      Array<Material & Pick<ProductMaterial, "isMust">>
+    >((carry, productMaterial) => {
+      const material = this.materials.find(
+        (material) => material.id === productMaterial.material
+      );
+
+      if (material) {
+        carry.push({
+          ...material,
+          isMust: productMaterial.isMust,
+        });
+      }
+
+      return carry;
+    }, []);
+  }
+
+  get optionalProductMaterials(): Material[] {
+    return this.productMaterials
+      ? this.productMaterials.filter((material) => !material.isMust)
+      : [];
+  }
+
+  get hasProducts(): boolean {
+    return this.selectedProducts.length > 0;
+  }
+
+  get selectedProductName(): string {
+    return this.selectedProduct ? this.selectedProduct.name : "";
   }
 
   updateOrder(): void {
-    this.hasProduct = true;
     this.selectedProducts.push({
-      name: this.selectedProduct,
+      name: this.selectedProductName,
       materials: this.selectedMaterials.toString(),
     });
     this.resetProduct();
   }
 
   resetProduct(): void {
-    this.productMaterialsOpt = [];
-    this.productMaterials = [];
-    this.selectedProduct = "";
+    this.selectedProduct = null;
     this.selectedMaterials = [];
   }
 
   submitOrder(): void {
-    console.log("submit")
+    console.log("submit");
   }
   // @materials.State
   // materialsList!: Material[];

@@ -1,6 +1,6 @@
-import { Material } from "@/types/Material";
+import { MaterialsIds } from "@/types/Material";
 
 export interface ProductMaterial {
-  material: Material;
+  material: MaterialsIds;
   isMust: boolean;
 }

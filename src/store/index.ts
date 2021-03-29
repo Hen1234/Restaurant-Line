@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Materials from "@/store/modules/materials";
+import product from "./modules/product";
 
 Vue.use(Vuex);
 
@@ -8,7 +8,8 @@ export default new Vuex.Store({
   // state: {},
   // mutations: {},
   // actions: {},
-  modules: { Materials },
+  modules: {
+    product,
+  },
   // modules: {Materials: {namespaced:true}},
-
 });
