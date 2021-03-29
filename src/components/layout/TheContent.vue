@@ -1,8 +1,11 @@
 <template>
-  <div class="container">
+  <div v-if="isHome" class="container">
     <queue-status></queue-status>
     <production-status></production-status>
     <delivery-status></delivery-status>
+  </div>
+  <div v-else>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -20,7 +23,11 @@ import QueueStatus from "@/components/status/QueueStatus.vue";
     DeliveryStatus,
   },
 })
-export default class TheContent extends Vue {}
+export default class TheContent extends Vue {
+  get isHome(): boolean {
+    return this.$route.fullPath === "/";
+  }
+}
 </script>
 
 <style scoped>

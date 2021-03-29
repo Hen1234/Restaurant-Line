@@ -7,7 +7,7 @@
       :num="index"
       :image="slot.image"
       :orderID="slot.orderID"
-      :producing="slot.producing"
+      :producing="slot.producing.name"
       :time="slot.time"
       :status="slot.status"
     >
@@ -30,18 +30,18 @@ export default class ProductionStatus extends Vue {
     {
       image: "/img/Hamburger.9f33cc71.jpg",
       orderID: 62,
-      producing: { priority: 0, name: "Hamburger", materials: []},
+      producing: { priority: 0, name: "Hamburger", materials: [] },
       time: "01:15:00",
       status: "6",
-      isAvailable: true
+      isAvailable: true,
     },
     {
       image: "/img/Salad.bcb2ab29.jpg",
       orderID: 63,
-      producing: { priority: 0, name: "Salad" ,materials: []},
+      producing: { priority: 0, name: "Salad", materials: [] },
       time: "00:30:00",
       status: "7",
-      isAvailable: true
+      isAvailable: true,
     },
   ];
 }

@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <!--    <router-view></router-view>-->
     <div class="header">
       <the-header></the-header>
     </div>

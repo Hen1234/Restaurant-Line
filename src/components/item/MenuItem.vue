@@ -3,7 +3,9 @@
     <div class="item-image">
       <img src="../../../src/images/item.png" />
     </div>
-    <div v-if="hover" class="item-label">{{ label }}</div>
+    <div v-if="hover" class="item-label">
+      <router-link :to="'/' + label">{{ label }}</router-link>
+    </div>
   </div>
 </template>
 
@@ -32,5 +34,8 @@ export default class MenuItem extends Vue {
 .item-label {
   margin: 10px 0 0 7px;
   min-width: 50px;
+}
+a {
+  text-decoration: none;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="container" @mouseover="hover = true" @mouseleave="hover = false">
     <div class="item">
-      <menu-item :hover="hover" label="Item 1"></menu-item>
+      <menu-item :hover="hover" label="Registration"></menu-item>
     </div>
     <div class="item">
       <menu-item :hover="hover" label="Item 2"></menu-item>
