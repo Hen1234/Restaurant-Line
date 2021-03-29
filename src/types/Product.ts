@@ -1,7 +1,7 @@
-import { Material } from "@/types/Material";
+import {ProductMaterial} from "@/types/ProductMaterial";
 
 export interface Product {
   name: string;
   priority: number;
-  materials: Material[];
+  materials: ProductMaterial[];
 }

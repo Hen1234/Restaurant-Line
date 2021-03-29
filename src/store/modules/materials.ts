@@ -19,16 +19,16 @@ export default class Materials extends VuexModule {
   get getMaterialsList(): Material[] {
     return this.materialsList;
   }
-  @Mutation //todo return type Material
-  getMaterial(name: string) {
-    console.log("fdgs");
-    // return this.materialsList.find(
-    //   (materialsList) => materialsList.name === name
-    // );
-  }
-  @Action
-  cloud(name: string): void {
-    console.log("fdgs")
-    // this.context.commit("getMaterial", name);
-  }
+  // @Mutation //todo return type Material
+  // getMaterial(name: string) {
+  //   console.log("fdgs");
+  //   return this.materialsList.find(
+  //     (materialsList) => materialsList.name === name
+  //   );
+  // }
+  // @Action
+  // cloud(name: string): void {
+  //   console.log("fdgs")
+  //   this.context.commit("getMaterial", name);
+  // }
 }

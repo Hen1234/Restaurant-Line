@@ -4,7 +4,7 @@
       <img src="../../../src/images/item.png" />
     </div>
     <div v-if="hover" class="item-label">
-      <router-link :to="'/' + label">{{ label }}</router-link>
+      <router-link :to="'/' + link">{{ label }}</router-link>
     </div>
   </div>
 </template>
@@ -17,6 +17,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 export default class MenuItem extends Vue {
   @Prop() hover!: boolean;
   @Prop() label!: string;
+  @Prop() link!: string;
 }
 </script>
 
@@ -33,7 +34,7 @@ export default class MenuItem extends Vue {
 }
 .item-label {
   margin: 10px 0 0 7px;
-  min-width: 50px;
+  min-width: 100px;
 }
 a {
   text-decoration: none;

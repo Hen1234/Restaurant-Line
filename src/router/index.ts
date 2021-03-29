@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
 import TheContent from "@/components/layout/TheContent.vue";
-import Registration from "@/pages/Registration.vue";
+import NewOrder from "@/pages/NewOrder.vue";
 
 Vue.use(VueRouter);
 
@@ -18,9 +18,9 @@ const routes: Array<RouteConfig> = [
         component: TheContent,
         children: [
           {
-            path: "/registration",
-            name: "Registration",
-            component: Registration,
+            path: "/new-order",
+            name: "NewOrder",
+            component: NewOrder,
           },
         ],
       },
