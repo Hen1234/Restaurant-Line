@@ -13,9 +13,9 @@
       <div class="slot-details-status">
         <span class="attribute">Production Status:</span>
         <div class="status-images">
-          <img class="status-image" src="../../../src/images/steak.png" />
+          <img class="status-image" src="../../images/steak.jpg" />
           <img class="status-image" src="../../../src/images/tomato.jpg" />
-          <img class="status-image" src="../../../src/images/mushroom.jpeg" />
+          <img class="status-image" src="../../images/mushroom.jpg" />
           <img class="status-image" src="../../../src/images/lettuce.jpg" />
           <img class="status-image" src="../../../src/images/onion.jpg" />
         </div>

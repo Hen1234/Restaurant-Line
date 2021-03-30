@@ -1,9 +1,6 @@
 <!--<template xmlns="http://www.w3.org/1999/html">-->
 <template>
   <div class="container">
-    <!--        <div>{{ getMaterialsList }}</div>-->
-    <!--    <div>{{ getMaterialFromList("tomato") }}</div>-->
-
     <form class="form-container">
       <div class="customer-details">
         <div class="header">Delivery information</div>
@@ -85,7 +82,7 @@
           name="selectedProduct"
           :value="selectedProductName"
         >
-          <option selected="selected">Select Product</option>
+          <!--          <option selected="selected">Select Product</option>-->
           <option
             v-for="product in products"
             :key="product.name"
@@ -94,14 +91,33 @@
             {{ product.name }}
           </option>
         </select>
+
         <div v-if="selectedProduct" class="product-details">
-          <div class="materials-list">
-            <div
-              v-for="material in productMaterials"
-              :key="material.name"
-              class="product-material"
-            >
-              {{ material.name }}
+          <!--          <production-item :producing="selectedProductName"></production-item>-->
+          <div class="slot-details">
+            <div class="slot-image">
+              <img
+                class="slot-image"
+                :src="imgURL(selectedProductName)"
+                v-bind:alt="selectedProductName"
+              />
+            </div>
+            <div class="slot-details-status">
+              <span class="attribute">Production Status:</span>
+              <div class="materials-list">
+                <div
+                  v-for="material in productMaterials"
+                  :key="material.name"
+                  class="product-material"
+                >
+                  {{ material.name }}
+                  <img
+                    class="status-image"
+                    :src="imgURL(material.name)"
+                    v-bind:alt="material.name"
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div class="field materials-option">
@@ -130,14 +146,45 @@
         v-for="product in selectedProducts"
         :key="product ? product.name : null"
       >
-        {{ product.name }} with
-        {{ product.materials }}
+        {{ product.name }}:
+        <div
+          class="order-product-materials"
+          v-for="material in product.materials"
+          :key="material.id"
+        >
+          {{ material.name }}
+        </div>
       </div>
       <div class="field">
         <button @click="submitOrder">Place order</button>
       </div>
     </div>
+    <base-dialog :showDialogProp="showDialog"  @closeModal="hideModal"></base-dialog>
   </div>
+  <!--  <transition name="modal">-->
+  <!--    <div class="modal-mask">-->
+  <!--      <div class="modal-wrapper">-->
+  <!--        <div class="modal-container">-->
+  <!--          <div class="modal-header">-->
+  <!--            <slot name="header"> default header </slot>-->
+  <!--          </div>-->
+
+  <!--          <div class="modal-body">-->
+  <!--            <slot name="body"> default body </slot>-->
+  <!--          </div>-->
+
+  <!--          <div class="modal-footer">-->
+  <!--            <slot name="footer">-->
+  <!--              default footer-->
+  <!--              <button class="modal-default-button" @click="$emit('close')">-->
+  <!--                OK-->
+  <!--              </button>-->
+  <!--            </slot>-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </transition>-->
 </template>
 
 <script lang="ts">
@@ -146,24 +193,34 @@ import { namespace } from "vuex-class";
 import { Material } from "@/types/Material";
 import { Product } from "@/types/Product";
 import { ProductMaterial } from "@/types/ProductMaterial";
-// import { ProductMaterial } from "@/types/ProductMaterial";
+import ProductionItem from "@/components/item/ProductionItem.vue";
+import { Order } from "@/types/Order";
+import BaseDialog from "@/components/ui/BaseDialog.vue";
 
 const ProductModule = namespace("product");
+const OrderModule = namespace("order");
 
 @Component({
   name: "NewOrder",
+  components: { BaseDialog, ProductionItem },
 })
 export default class NewOrder extends Vue {
   @ProductModule.State((state) => state.products) products!: Array<Product>;
   @ProductModule.State((state) => state.materials) materials!: Array<Material>;
+  // @OrderModule.Action((action) => action.addNewOrder) addNewOrder;
+  @OrderModule.Action("addNewOrderAction") addOrder;
+  @OrderModule.State((state) => state.counter) orderCounter!: number;
+  @OrderModule.State((state) => state.orders) orders!: Array<Order>;
   selectedProduct: Product | null;
   selectedProducts: Array<Product>;
-  selectedMaterials: string[];
+  selectedMaterials: Array<Material>;
+  showDialog: boolean;
   constructor() {
     super();
     this.selectedProduct = null;
     this.selectedMaterials = [];
     this.selectedProducts = [];
+    this.showDialog = false;
   }
 
   productChangeHandler(event: Event): void {
@@ -178,13 +235,13 @@ export default class NewOrder extends Vue {
   }
 
   get productMaterials(): Array<Material & Pick<ProductMaterial, "isMust">> {
+    console.log(this.selectedProduct);
     if (!this.selectedProduct) {
       return [];
     }
 
     const selectedProductMaterials: ProductMaterial[] = this.selectedProduct
       .materials;
-
     return selectedProductMaterials.reduce<
       Array<Material & Pick<ProductMaterial, "isMust">>
     >((carry, productMaterial) => {
@@ -198,9 +255,19 @@ export default class NewOrder extends Vue {
           isMust: productMaterial.isMust,
         });
       }
-
       return carry;
     }, []);
+  }
+
+  imgURL(imageName: string) {
+    const images = require.context("../images/", false, /\.jpg$/);
+    return images("./" + imageName + ".jpg");
+  }
+
+  hideModal(): void {
+    console.log("hereModal")
+    this.showDialog = false;
+    this.$router.push("/");
   }
 
   get optionalProductMaterials(): Material[] {
@@ -218,10 +285,30 @@ export default class NewOrder extends Vue {
   }
 
   updateOrder(): void {
-    this.selectedProducts.push({
-      name: this.selectedProductName,
-      materials: this.selectedMaterials.toString(),
-    });
+    console.log(this.selectedMaterials);
+    //todo: check id.toString()
+    this.selectedMaterials = this.selectedMaterials.map((selectedMaterial) =>
+      this.materials.find(
+        (material) => material.id.toString() === selectedMaterial
+      )
+    );
+    const mustMaterials = this.selectedProduct?.materials
+      .filter((material) => material.isMust)
+      .map((mustMaterial) =>
+        this.materials.find(
+          (material) =>
+            material.id === mustMaterial.material &&
+            !this.selectedMaterials.includes(material)
+        )
+      );
+    this.selectedMaterials = this.selectedMaterials.concat(mustMaterials);
+    const newProductToOrder = {
+      order: this.selectedProduct?.order,
+      name: this.selectedProduct?.name,
+      priority: this.selectedProduct?.priority,
+      materials: this.selectedMaterials,
+    };
+    this.selectedProducts.push(newProductToOrder);
     this.resetProduct();
   }
 
@@ -231,14 +318,14 @@ export default class NewOrder extends Vue {
   }
 
   submitOrder(): void {
-    console.log("submit");
+    this.addOrder({
+      orderID: this.orderCounter,
+      products: this.selectedProducts,
+    });
+    console.log(this.orders);
+    this.showDialog = true;
+    // this.$router.push("/");
   }
-  // @materials.State
-  // materialsList!: Material[];
-  // @materials.Getter
-  // getMaterialsList!: Material[];
-  // @materials.Action
-  // cloud!: (materialName: string) => Material;
 }
 </script>
 
@@ -276,7 +363,6 @@ export default class NewOrder extends Vue {
   align-items: center;
   width: fit-content;
   height: 50px;
-  border: 1px solid black;
 }
 .product-material {
   margin: 10px;
@@ -286,5 +372,29 @@ export default class NewOrder extends Vue {
 }
 .order-details {
   margin-top: 10px;
+}
+.slot-details {
+  margin-top: 10px;
+  height: fit-content;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  &-product {
+    margin-left: 20px;
+  }
+  &-status {
+    margin-left: 20px;
+  }
+}
+.status-images {
+  display: flex;
+}
+.status-image {
+  height: 40px;
+  width: 40px;
+}
+.slot-image {
+  height: 80px;
+  width: 100px;
 }
 </style>
