@@ -93,7 +93,6 @@
         </select>
 
         <div v-if="selectedProduct" class="product-details">
-          <!--          <production-item :producing="selectedProductName"></production-item>-->
           <div class="slot-details">
             <div class="slot-image">
               <img
@@ -159,32 +158,11 @@
         <button @click="submitOrder">Place order</button>
       </div>
     </div>
-    <base-dialog :showDialogProp="showDialog"  @closeModal="hideModal"></base-dialog>
+    <base-dialog
+      :showDialogProp="showDialog"
+      @closeModal="hideDialog"
+    ></base-dialog>
   </div>
-  <!--  <transition name="modal">-->
-  <!--    <div class="modal-mask">-->
-  <!--      <div class="modal-wrapper">-->
-  <!--        <div class="modal-container">-->
-  <!--          <div class="modal-header">-->
-  <!--            <slot name="header"> default header </slot>-->
-  <!--          </div>-->
-
-  <!--          <div class="modal-body">-->
-  <!--            <slot name="body"> default body </slot>-->
-  <!--          </div>-->
-
-  <!--          <div class="modal-footer">-->
-  <!--            <slot name="footer">-->
-  <!--              default footer-->
-  <!--              <button class="modal-default-button" @click="$emit('close')">-->
-  <!--                OK-->
-  <!--              </button>-->
-  <!--            </slot>-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </transition>-->
 </template>
 
 <script lang="ts">
@@ -207,7 +185,6 @@ const OrderModule = namespace("order");
 export default class NewOrder extends Vue {
   @ProductModule.State((state) => state.products) products!: Array<Product>;
   @ProductModule.State((state) => state.materials) materials!: Array<Material>;
-  // @OrderModule.Action((action) => action.addNewOrder) addNewOrder;
   @OrderModule.Action("addNewOrderAction") addOrder;
   @OrderModule.State((state) => state.counter) orderCounter!: number;
   @OrderModule.State((state) => state.orders) orders!: Array<Order>;
@@ -235,7 +212,6 @@ export default class NewOrder extends Vue {
   }
 
   get productMaterials(): Array<Material & Pick<ProductMaterial, "isMust">> {
-    console.log(this.selectedProduct);
     if (!this.selectedProduct) {
       return [];
     }
@@ -264,8 +240,7 @@ export default class NewOrder extends Vue {
     return images("./" + imageName + ".jpg");
   }
 
-  hideModal(): void {
-    console.log("hereModal")
+  hideDialog(): void {
     this.showDialog = false;
     this.$router.push("/");
   }
@@ -285,7 +260,6 @@ export default class NewOrder extends Vue {
   }
 
   updateOrder(): void {
-    console.log(this.selectedMaterials);
     //todo: check id.toString()
     this.selectedMaterials = this.selectedMaterials.map((selectedMaterial) =>
       this.materials.find(
@@ -295,20 +269,13 @@ export default class NewOrder extends Vue {
     const mustMaterials = this.selectedProduct?.materials
       .filter((material) => material.isMust)
       .map((mustMaterial) =>
-        this.materials.find(
-          (material) =>
-            material.id === mustMaterial.material &&
-            !this.selectedMaterials.includes(material)
-        )
+        this.materials.find((material) => material.id === mustMaterial.material)
       );
     this.selectedMaterials = this.selectedMaterials.concat(mustMaterials);
-    const newProductToOrder = {
-      order: this.selectedProduct?.order,
-      name: this.selectedProduct?.name,
-      priority: this.selectedProduct?.priority,
+    this.selectedProducts.push({
+      ...this.selectedProduct,
       materials: this.selectedMaterials,
-    };
-    this.selectedProducts.push(newProductToOrder);
+    });
     this.resetProduct();
   }
 
@@ -322,9 +289,7 @@ export default class NewOrder extends Vue {
       orderID: this.orderCounter,
       products: this.selectedProducts,
     });
-    console.log(this.orders);
     this.showDialog = true;
-    // this.$router.push("/");
   }
 }
 </script>
@@ -375,7 +340,7 @@ export default class NewOrder extends Vue {
 }
 .slot-details {
   margin-top: 10px;
-  height: fit-content;
+  height: 100px;
   border: 1px solid black;
   display: flex;
   align-items: center;
@@ -394,7 +359,7 @@ export default class NewOrder extends Vue {
   width: 40px;
 }
 .slot-image {
-  height: 80px;
-  width: 100px;
+  height: 100px;
+  width: 110px;
 }
 </style>

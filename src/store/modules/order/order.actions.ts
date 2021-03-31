@@ -1,18 +1,9 @@
-import { Product } from "@/types/Product";
 import { Order } from "@/types/Order";
-
-// export default {
-//
-//
-//   addNewOrder(): void {
-//     console.log("actionnnnnnnnnn")
-//     // context.commit("addNewOrder", newOrder);
-//   },
-// };
+import {ActionContext} from "vuex";
 
 export const actions = {
-  addNewOrderAction(context, order: Order): void {
+  //todo: context type
+  addNewOrderAction(context: ActionContext<any, any>, order: Order): void {
     context.commit("addNewOrder", order);
-    console.log(order);
   },
 };
