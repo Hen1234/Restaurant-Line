@@ -15,13 +15,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Prop } from "vue-property-decorator";
+import { Component, Emit, Prop, Vue } from "vue-property-decorator";
 
 @Component({
   name: "BaseDialog",
 })
-export default class BaseDialog {
-  @Prop() showDialogProp: boolean;
+export default class BaseDialog extends Vue {
+  @Prop() showDialogProp!: boolean;
   @Emit("closeModal")
   close(): void {
     //todo: no content

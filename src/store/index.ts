@@ -1,12 +1,18 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { Store } from "vuex";
 import product from "./modules/product";
 import order from "./modules/order";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {},
+export interface AppState {
+  version: number;
+}
+
+const store: Store<AppState> = new Vuex.Store<AppState>({
+  state: {
+    version: 1,
+  },
   mutations: {},
   actions: {},
   modules: {
@@ -14,3 +20,5 @@ export default new Vuex.Store({
     order,
   },
 });
+
+export default store;

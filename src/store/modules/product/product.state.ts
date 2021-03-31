@@ -1,7 +1,7 @@
 import { MaterialsIds, Material } from "@/types/Material";
 import { Product } from "@/types/Product";
 
-interface ProductStateInterface {
+export interface ProductStateInterface {
   materials: Array<Material>;
   products: Array<Product>;
 }

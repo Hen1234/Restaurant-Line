@@ -31,6 +31,10 @@ export default class MenuItem extends Vue {
   width: 50px;
   margin: 10px 0 0 7px;
   display: flex;
+
+  img {
+    height: 100%;
+  }
 }
 .item-label {
   margin: 10px 0 0 7px;

@@ -97,7 +97,7 @@
             <div class="slot-image">
               <img
                 class="slot-image"
-                :src="imgURL(selectedProductName)"
+                :src="resolveImageUrl(selectedProductName)"
                 v-bind:alt="selectedProductName"
               />
             </div>
@@ -112,7 +112,7 @@
                   {{ material.name }}
                   <img
                     class="status-image"
-                    :src="imgURL(material.name)"
+                    :src="resolveImageUrl(material.name)"
                     v-bind:alt="material.name"
                   />
                 </div>
@@ -127,7 +127,7 @@
               <input
                 :id="material.name"
                 type="checkbox"
-                v-model="selectedMaterials"
+                v-model="selectedOptionalMaterials"
                 :value="material.name"
               />{{ material.name }}
             </div>
@@ -142,7 +142,7 @@
       <div class="header">Order summary</div>
       <div
         class="order-details"
-        v-for="product in selectedProducts"
+        v-for="product in productsSummary"
         :key="product ? product.name : null"
       >
         {{ product.name }}:
@@ -174,6 +174,7 @@ import { ProductMaterial } from "@/types/ProductMaterial";
 import ProductionItem from "@/components/item/ProductionItem.vue";
 import { Order } from "@/types/Order";
 import BaseDialog from "@/components/ui/BaseDialog.vue";
+import { Nullable } from "@/types/utility.types";
 
 const ProductModule = namespace("product");
 const OrderModule = namespace("order");
@@ -183,33 +184,15 @@ const OrderModule = namespace("order");
   components: { BaseDialog, ProductionItem },
 })
 export default class NewOrder extends Vue {
+  @OrderModule.Action("addNewOrderAction") addOrder!: (order: Order) => void;
   @ProductModule.State((state) => state.products) products!: Array<Product>;
   @ProductModule.State((state) => state.materials) materials!: Array<Material>;
-  @OrderModule.Action("addNewOrderAction") addOrder;
   @OrderModule.State((state) => state.counter) orderCounter!: number;
   @OrderModule.State((state) => state.orders) orders!: Array<Order>;
-  selectedProduct: Product | null;
-  selectedProducts: Array<Product>;
-  selectedMaterials: Array<Material>;
-  showDialog: boolean;
-  constructor() {
-    super();
-    this.selectedProduct = null;
-    this.selectedMaterials = [];
-    this.selectedProducts = [];
-    this.showDialog = false;
-  }
-
-  productChangeHandler(event: Event): void {
-    const selectedProductName = (event.target as HTMLInputElement).value;
-    const selectedProduct = this.products.find(
-      (product) => product.name === selectedProductName
-    );
-
-    if (selectedProduct) {
-      this.selectedProduct = selectedProduct;
-    }
-  }
+  selectedProduct: Nullable<Product> = null;
+  productsSummary: Array<Product> = [];
+  selectedOptionalMaterials: Array<Material> = [];
+  showDialog = false;
 
   get productMaterials(): Array<Material & Pick<ProductMaterial, "isMust">> {
     if (!this.selectedProduct) {
@@ -235,9 +218,32 @@ export default class NewOrder extends Vue {
     }, []);
   }
 
-  imgURL(imageName: string) {
+  get optionalProductMaterials(): Material[] {
+    return this.productMaterials.filter((material) => !material.isMust);
+  }
+
+  get hasProducts(): boolean {
+    return this.productsSummary.length > 0;
+  }
+
+  get selectedProductName(): string {
+    return this.selectedProduct ? this.selectedProduct.name : "";
+  }
+
+  productChangeHandler(event: Event): void {
+    const selectedProductName = (event.target as HTMLInputElement).value;
+    const selectedProduct = this.products.find(
+      (product) => product.name === selectedProductName
+    );
+
+    if (selectedProduct) {
+      this.selectedProduct = selectedProduct;
+    }
+  }
+
+  resolveImageUrl(imageName: string): string {
     const images = require.context("../images/", false, /\.jpg$/);
-    return images("./" + imageName + ".jpg");
+    return images(`./${imageName}.jpg`);
   }
 
   hideDialog(): void {
@@ -245,49 +251,38 @@ export default class NewOrder extends Vue {
     this.$router.push("/");
   }
 
-  get optionalProductMaterials(): Material[] {
-    return this.productMaterials
-      ? this.productMaterials.filter((material) => !material.isMust)
-      : [];
-  }
-
-  get hasProducts(): boolean {
-    return this.selectedProducts.length > 0;
-  }
-
-  get selectedProductName(): string {
-    return this.selectedProduct ? this.selectedProduct.name : "";
-  }
-
   updateOrder(): void {
     //todo: check id.toString()
-    this.selectedMaterials = this.selectedMaterials.map((selectedMaterial) =>
-      this.materials.find(
-        (material) => material.id.toString() === selectedMaterial
-      )
+    this.selectedOptionalMaterials = this.selectedOptionalMaterials.map(
+      (selectedMaterial) =>
+        this.materials.find(
+          (material) => material.id.toString() === selectedMaterial
+        )
     );
     const mustMaterials = this.selectedProduct?.materials
       .filter((material) => material.isMust)
       .map((mustMaterial) =>
         this.materials.find((material) => material.id === mustMaterial.material)
       );
-    this.selectedMaterials = this.selectedMaterials.concat(mustMaterials);
-    this.selectedProducts.push({
+    this.selectedOptionalMaterials = this.selectedOptionalMaterials.concat(
+      mustMaterials
+    );
+    this.productsSummary.push({
       ...this.selectedProduct,
-      materials: this.selectedMaterials,
+      materials: this.selectedOptionalMaterials,
     });
     this.resetProduct();
   }
 
   resetProduct(): void {
     this.selectedProduct = null;
-    this.selectedMaterials = [];
+    this.selectedOptionalMaterials = [];
   }
 
   submitOrder(): void {
     this.addOrder({
       orderID: this.orderCounter,
-      products: this.selectedProducts,
+      products: this.productsSummary,
     });
     this.showDialog = true;
   }
