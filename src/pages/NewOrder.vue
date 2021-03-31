@@ -7,24 +7,30 @@
         <div class="field">
           <input
             class="field-input"
+            :class="{ invalid: inputValidity('customerName') }"
             id="full-name"
             type="text"
+            v-model="customerName"
             placeholder="Your Name"
           />
         </div>
         <div class="field">
           <input
             class="field-input"
+            :class="{ invalid: inputValidity('customerPhone') }"
             id="phone"
             type="text"
+            v-model="customerPhone"
             placeholder="Your Phone"
           />
         </div>
         <div class="field">
           <input
             class="field-input"
+            :class="{ invalid: inputValidity('customerStreet1') }"
             id="street"
             type="text"
+            v-model="customerStreet1"
             placeholder="Street Address"
           />
         </div>
@@ -33,32 +39,44 @@
             class="field-input"
             id="street2"
             type="text"
+            v-model="customerStreet2"
             placeholder="Street Address 2"
           />
         </div>
         <div class="field">
           <input
             class="field-input-address"
+            :class="{ invalid: inputValidity('customerCity') }"
             id="city"
             type="text"
+            v-model="customerCity"
             placeholder="City"
           />
           <input
-            class="field-input-address-right"
+            class="field-input-address-right-state"
+            :class="{ invalid: inputValidity('customerState') }"
             id="state"
             type="text"
+            v-model="customerState"
             placeholder="State / Province"
           />
         </div>
         <div class="field">
           <input
             class="field-input-address"
+            :class="{ invalid: inputValidity('customerZipCode') }"
             id="zip"
             type="text"
+            v-model="customerZipCode"
             placeholder="Portal / Zip Code"
           />
-          <select class="field-input-address-right" id="country">
-            <option selected="selected">Select Country</option>
+          <select
+            class="field-input-address-right-country"
+            :class="{ invalid: inputValidity('customerCountry') }"
+            id="country"
+            v-model="customerCountry"
+          >
+            <!--            <option selected="selected">Select Country</option>-->
             <option value="Israel">Israel</option>
             <option value="US">US</option>
             <option value="UK">UK</option>
@@ -71,6 +89,7 @@
             class="field-input-comments"
             type="text"
             placeholder="Comments for delivery"
+            v-model="customerComments"
           ></textarea>
         </div>
       </div>
@@ -158,10 +177,11 @@
         <button @click="submitOrder">Place order</button>
       </div>
     </div>
-    <base-dialog
-      :showDialogProp="showDialog"
-      @closeModal="hideDialog"
-    ></base-dialog>
+    <base-dialog :showDialogProp="showDialog" @closeModal="hideDialog"
+      ><template v-slot:content>
+        <h2>{{ modalContent }}</h2>
+      </template></base-dialog
+    >
   </div>
 </template>
 
@@ -184,15 +204,25 @@ const OrderModule = namespace("order");
   components: { BaseDialog, ProductionItem },
 })
 export default class NewOrder extends Vue {
-  @OrderModule.Action("addNewOrderAction") addOrder!: (order: Order) => void;
+  @OrderModule.Action("addNewOrderAction") addOrder!: (products: Order) => void;
   @ProductModule.State((state) => state.products) products!: Array<Product>;
   @ProductModule.State((state) => state.materials) materials!: Array<Material>;
-  @OrderModule.State((state) => state.counter) orderCounter!: number;
+  @OrderModule.State((state) => state.currentOrderId) orderCounter!: number;
   @OrderModule.State((state) => state.orders) orders!: Array<Order>;
   selectedProduct: Nullable<Product> = null;
   productsSummary: Array<Product> = [];
   selectedOptionalMaterials: Array<Material> = [];
   showDialog = false;
+  modalContent = "";
+  customerName = "";
+  customerPhone = "";
+  customerStreet1 = "";
+  customerStreet2 = "";
+  customerState = "";
+  customerCity = "";
+  customerZipCode = "";
+  customerCountry = "";
+  customerComments = "";
 
   get productMaterials(): Array<Material & Pick<ProductMaterial, "isMust">> {
     if (!this.selectedProduct) {
@@ -230,6 +260,9 @@ export default class NewOrder extends Vue {
     return this.selectedProduct ? this.selectedProduct.name : "";
   }
 
+  inputValidity(inputName: string): boolean {
+    return this[inputName] === "";
+  }
   productChangeHandler(event: Event): void {
     const selectedProductName = (event.target as HTMLInputElement).value;
     const selectedProduct = this.products.find(
@@ -248,7 +281,7 @@ export default class NewOrder extends Vue {
 
   hideDialog(): void {
     this.showDialog = false;
-    this.$router.push("/");
+    if (this.validateForm()) this.$router.push("/");
   }
 
   updateOrder(): void {
@@ -280,11 +313,47 @@ export default class NewOrder extends Vue {
   }
 
   submitOrder(): void {
-    this.addOrder({
-      orderID: this.orderCounter,
-      products: this.productsSummary,
-    });
-    this.showDialog = true;
+    if (this.validateForm()) {
+      const newCustomer = {
+        id: 1,
+        name: this.customerName,
+        street1: this.customerStreet1,
+        street2: this.customerStreet2,
+        city: this.customerCity,
+        state: this.customerState,
+        zipCode: this.customerZipCode,
+        country: this.customerCountry,
+        phone: this.customerPhone,
+        money: 0,
+        priority: 0,
+      };
+      this.addOrder({
+        orderID: 0,
+        products: this.productsSummary,
+        customer: newCustomer,
+        comments: this.customerComments,
+      });
+      this.modalContent = "Yor order has been submitted";
+      this.showDialog = true;
+    } else {
+      this.modalContent = "Yor have to fill all the marked fields";
+      this.showDialog = true;
+    }
+  }
+
+  validateForm(): boolean {
+    if (
+      this.customerName === "" ||
+      this.customerPhone === "" ||
+      this.customerStreet1 === "" ||
+      this.customerCountry === "" ||
+      this.customerZipCode === "" ||
+      this.customerState === "" ||
+      this.customerCity === ""
+    ) {
+      return false;
+    }
+    return true;
   }
 }
 </script>
@@ -311,8 +380,13 @@ export default class NewOrder extends Vue {
     }
     &-address {
       width: 125px;
-      &-right {
+      &-right-state {
         margin-left: 10px;
+        width: 130px;
+      }
+      &-right-country {
+        margin-left: 10px;
+        width: 137px;
       }
     }
   }
@@ -356,5 +430,9 @@ export default class NewOrder extends Vue {
 .slot-image {
   height: 100px;
   width: 110px;
+}
+
+.invalid {
+  border: 2px solid red;
 }
 </style>

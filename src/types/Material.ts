@@ -11,4 +11,5 @@ export interface Material {
   id: MaterialsIds;
   name: string;
   count: number;
+  productionTime: number;
 }

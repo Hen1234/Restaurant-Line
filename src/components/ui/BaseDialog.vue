@@ -4,7 +4,8 @@
     <transition name="dialog">
       <dialog open v-if="showDialogProp">
         <header>
-          <h2>Yor order has been submitted</h2>
+          <slot name="content"></slot>
+<!--          <h2>Yor order has been submitted</h2>-->
         </header>
         <div>
           <button @click="close">close</button>

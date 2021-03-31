@@ -3,10 +3,10 @@ import { MaterialsIds } from "@/types/Material";
 
 export interface OrderStateInterface {
   orders: Array<Order>;
-  counter: number;
+  currentOrderId: number;
 }
 
 export const state: OrderStateInterface = {
   orders: [],
-  counter: 1,
+  currentOrderId: 0,
 };

@@ -8,12 +8,42 @@ export interface ProductStateInterface {
 
 export const state: ProductStateInterface = {
   materials: [
-    { id: MaterialsIds.Tomato, name: MaterialsIds.Tomato, count: 50, },
-    { id: MaterialsIds.Onion, name: MaterialsIds.Onion, count: 100 },
-    { id: MaterialsIds.Steak, name: MaterialsIds.Steak, count: 30 },
-    { id: MaterialsIds.Lettuce, name: MaterialsIds.Lettuce, count: 20 },
-    { id: MaterialsIds.Cucumber, name: MaterialsIds.Cucumber, count: 50 },
-    { id: MaterialsIds.Mushroom, name: MaterialsIds.Mushroom, count: 20 },
+    {
+      id: MaterialsIds.Tomato,
+      name: MaterialsIds.Tomato,
+      count: 50,
+      productionTime: 5,
+    },
+    {
+      id: MaterialsIds.Onion,
+      name: MaterialsIds.Onion,
+      count: 100,
+      productionTime: 10,
+    },
+    {
+      id: MaterialsIds.Steak,
+      name: MaterialsIds.Steak,
+      count: 30,
+      productionTime: 30,
+    },
+    {
+      id: MaterialsIds.Lettuce,
+      name: MaterialsIds.Lettuce,
+      count: 20,
+      productionTime: 3,
+    },
+    {
+      id: MaterialsIds.Cucumber,
+      name: MaterialsIds.Cucumber,
+      count: 50,
+      productionTime: 5,
+    },
+    {
+      id: MaterialsIds.Mushroom,
+      name: MaterialsIds.Mushroom,
+      count: 20,
+      productionTime: 5,
+    },
   ],
   products: [
     {

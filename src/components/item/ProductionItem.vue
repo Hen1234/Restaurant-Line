@@ -1,23 +1,24 @@
 <template>
   <div class="container">
-    <div class="slot-num">Production Slot #{{ num + 1 }}</div>
-    <div class="slot-details">
+    <div class="slot-num">Production Slot #{{ orderID }}</div>
+    <div v-for="product in products" :key="product.name" class="slot-details">
       <div class="slot-image">
-        <img class="slot-image" :src="image" />
+        <img class="slot-image" :src="resolveImageUrl(product.name)" />
       </div>
       <div class="slot-details-product">
         <div><span class="attribute">Order ID:</span> {{ orderID }}</div>
-        <div><span class="attribute">Producing:</span> {{ producing }}</div>
-        <div><span class="attribute">Estimated Time:</span> {{ time }}</div>
+        <div><span class="attribute">Producing:</span> {{ product.name }}</div>
+        <div>
+          <span class="attribute">Estimated Time:</span>
+          {{ totalTime(product) }} ms
+        </div>
       </div>
       <div class="slot-details-status">
         <span class="attribute">Production Status:</span>
         <div class="status-images">
-          <img class="status-image" src="../../images/steak.jpg" />
-          <img class="status-image" src="../../../src/images/tomato.jpg" />
-          <img class="status-image" src="../../images/mushroom.jpg" />
-          <img class="status-image" src="../../../src/images/lettuce.jpg" />
-          <img class="status-image" src="../../../src/images/onion.jpg" />
+          <div v-for="material in product.materials" :key="material.id">
+            <img class="status-image" :src="resolveImageUrl(material.id)" />
+          </div>
         </div>
       </div>
     </div>
@@ -26,16 +27,26 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { Product } from "@/types/Product";
 @Component({
   name: "ProductionItem",
 })
 export default class ProductionItem extends Vue {
-  @Prop() num!: number;
-  @Prop() image!: string;
   @Prop() orderID!: number;
-  @Prop() producing!: string;
-  @Prop() time!: string;
-  @Prop() status!: string;
+  @Prop() products!: Array<Product>;
+  @Prop() slotNum!: number;
+
+  resolveImageUrl(imageName: string): string {
+    const images = require.context("../../images/", false, /\.jpg$/);
+    return images(`./${imageName}.jpg`);
+  }
+
+  totalTime(product: Product): number {
+    return product.materials.reduce<number>((carry, material) => {
+      carry += material.productionTime;
+      return carry;
+    }, 0);
+  }
 }
 </script>
 
@@ -52,6 +63,7 @@ export default class ProductionItem extends Vue {
   }
   &-status {
     margin-left: 20px;
+    //display: flex;
   }
 }
 

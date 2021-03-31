@@ -1,24 +1,36 @@
 <template>
   <div class="container">
     <span class="header">Production Status</span>
+
+    <!--    <production-item-->
+    <!--      slotNum="1"-->
+    <!--      :key="orderID"-->
+    <!--      :orderID="orderID"-->
+    <!--      :products="orderProducts"-->
+    <!--    ></production-item>-->
+
     <production-item
-      v-for="(slot, index) in slots"
-      :key="index"
-      :num="index"
-      :image="slot.image"
-      :orderID="slot.orderID"
-      :producing="slot.producing.name"
-      :time="slot.time"
-      :status="slot.status"
+      v-for="order in orders"
+      slotNum="1"
+      :key="order.orderID"
+      :orderID="order.orderID"
+      :products="order.products"
     >
     </production-item>
+    <div class="noOrdersToShow" v-if="isOrdersEmpty">No orders on slots</div>
+    <!--    <production-item v-if="isMoreThanOneOrder" slotNum="2"></production-item>-->
   </div>
 </template>
 
 <script lang="ts">
 import ProductionItem from "@/components/item/ProductionItem.vue";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { Slot } from "@/types/Slot.ts";
+import { namespace } from "vuex-class";
+import { Order } from "@/types/Order";
+import { Product } from "@/types/Product";
+
+const OrderModule = namespace("order");
 @Component({
   name: "ProductionStatus",
   components: {
@@ -26,24 +38,27 @@ import { Slot } from "@/types/Slot.ts";
   },
 })
 export default class ProductionStatus extends Vue {
-  private slots: Array<Slot> = [
-    {
-      image: "/img/Hamburger.9f33cc71.jpg",
-      orderID: 62,
-      producing: { priority: 0, name: "Hamburger", materials: [] },
-      time: "01:15:00",
-      status: "6",
-      isAvailable: true,
-    },
-    {
-      image: "/img/Salad.bcb2ab29.jpg",
-      orderID: 63,
-      producing: { priority: 0, name: "Salad", materials: [] },
-      time: "00:30:00",
-      status: "7",
-      isAvailable: true,
-    },
-  ];
+  @OrderModule.State((state) => state.orders) ordersState!: Array<Order>;
+  @OrderModule.State((state) => state.currentOrderId)
+  currentOrderIdState!: number;
+
+  get orders() {
+    return this.ordersState;
+  }
+
+  get isOrdersEmpty(): boolean {
+    return this.ordersState.length === 0;
+  }
+
+  @Watch("orderStateLength", { deep: true })
+  newOrder(value: string, oldValue: string): void {
+    console.log("new order!!!!");
+  }
+
+  get orderStateLength(): number {
+    console.log(this.ordersState.length);
+    return this.ordersState.length;
+  }
 }
 </script>
 
@@ -53,5 +68,11 @@ export default class ProductionStatus extends Vue {
 }
 .header {
   font-size: 20px;
+}
+.noOrdersToShow {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  font-size: 15px;
 }
 </style>
