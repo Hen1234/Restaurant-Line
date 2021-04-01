@@ -18,6 +18,8 @@
 import DeliveryItem from "@/components/item/DeliveryItem.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { Delivery } from "@/types/Delivery.ts";
+import { namespace } from "vuex-class";
+const DeliveryModule = namespace("delivery");
 @Component({
   name: "DeliveryStatus",
   components: {
@@ -25,10 +27,8 @@ import { Delivery } from "@/types/Delivery.ts";
   },
 })
 export default class DeliveryStatus extends Vue {
-  private deliveries: Array<Delivery> = [
-    { orderID: 51, time: "01:15:00", inDelivery: true, isFailed: false },
-    { orderID: 52, time: "00:25:00", inDelivery: true, isFailed: false },
-  ];
+  @DeliveryModule.State((state) => state.deliveries)
+  deliveries!: Array<Delivery>;
 }
 </script>
 

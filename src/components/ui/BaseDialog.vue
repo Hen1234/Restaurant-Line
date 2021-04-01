@@ -5,7 +5,6 @@
       <dialog open v-if="showDialogProp">
         <header>
           <slot name="content"></slot>
-<!--          <h2>Yor order has been submitted</h2>-->
         </header>
         <div>
           <button @click="close">close</button>

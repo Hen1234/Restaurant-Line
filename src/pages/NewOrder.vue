@@ -186,15 +186,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Mixins, Vue } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import { Material } from "@/types/Material";
 import { Product } from "@/types/Product";
 import { ProductMaterial } from "@/types/ProductMaterial";
-import ProductionItem from "@/components/item/ProductionItem.vue";
+import ProductionItem from "@/components/item/OrderItem.vue";
 import { Order } from "@/types/Order";
 import BaseDialog from "@/components/ui/BaseDialog.vue";
 import { Nullable } from "@/types/utility.types";
+import ResolveImageUrlMixin from "@/mixins/ResolveImageUrlMixin.vue";
 
 const ProductModule = namespace("product");
 const OrderModule = namespace("order");
@@ -203,8 +204,9 @@ const OrderModule = namespace("order");
   name: "NewOrder",
   components: { BaseDialog, ProductionItem },
 })
-export default class NewOrder extends Vue {
-  @OrderModule.Action("addNewOrderAction") addOrder!: (products: Order) => void;
+export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
+  customerName = "";
+  @OrderModule.Action("addNewOrderAction") addOrder!: (order: Order) => void;
   @ProductModule.State((state) => state.products) products!: Array<Product>;
   @ProductModule.State((state) => state.materials) materials!: Array<Material>;
   @OrderModule.State((state) => state.currentOrderId) orderCounter!: number;
@@ -214,7 +216,7 @@ export default class NewOrder extends Vue {
   selectedOptionalMaterials: Array<Material> = [];
   showDialog = false;
   modalContent = "";
-  customerName = "";
+
   customerPhone = "";
   customerStreet1 = "";
   customerStreet2 = "";
@@ -260,8 +262,11 @@ export default class NewOrder extends Vue {
     return this.selectedProduct ? this.selectedProduct.name : "";
   }
 
-  inputValidity(inputName: string): boolean {
-    return this[inputName] === "";
+  inputValidity(inputName: string): boolean{
+    // console.log(`${this[inputName]}`);
+    // return this[inputName] === "";
+    return `${this[inputName]}` === "";
+
   }
   productChangeHandler(event: Event): void {
     const selectedProductName = (event.target as HTMLInputElement).value;
@@ -275,8 +280,7 @@ export default class NewOrder extends Vue {
   }
 
   resolveImageUrl(imageName: string): string {
-    const images = require.context("../images/", false, /\.jpg$/);
-    return images(`./${imageName}.jpg`);
+    return this.resolveImageUrlMixin(imageName);
   }
 
   hideDialog(): void {
@@ -368,25 +372,33 @@ export default class NewOrder extends Vue {
 }
 .choose-product {
   margin-left: 200px;
+  border-radius: 5px;
+  width: 200px;
 }
 .field {
   margin-top: 10px;
+  width: 300px;
+  border-radius: 5px;
   &-input {
-    width: 300px;
+    width: inherit;
+    border-radius: inherit;
     &-comments {
       height: 70px;
-      //todo delete width from here
-      width: 300px;
+      width: inherit;
+      border-radius: inherit;
     }
     &-address {
       width: 125px;
+      border-radius: inherit;
       &-right-state {
         margin-left: 10px;
         width: 130px;
+        border-radius: inherit;
       }
       &-right-country {
         margin-left: 10px;
         width: 137px;
+        border-radius: inherit;
       }
     }
   }
@@ -410,7 +422,9 @@ export default class NewOrder extends Vue {
 .slot-details {
   margin-top: 10px;
   height: 100px;
+  width: fit-content;
   border: 1px solid black;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   &-product {
@@ -428,11 +442,12 @@ export default class NewOrder extends Vue {
   width: 40px;
 }
 .slot-image {
-  height: 100px;
+  height: 97px;
   width: 110px;
 }
 
 .invalid {
   border: 2px solid red;
+  border-radius: 5px;
 }
 </style>

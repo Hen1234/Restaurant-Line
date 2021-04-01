@@ -8,4 +8,5 @@ export const actions = {
   addNewOrderAction(context: ActionContext<any, any>, order: Order): void {
     context.commit("addNewOrder", order);
   },
+
 };

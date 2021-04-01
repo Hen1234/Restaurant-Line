@@ -1,12 +1,15 @@
 <template>
   <div class="container">
-    <div class="slot-num">Production Slot #{{ orderID }}</div>
-    <div v-for="product in products" :key="product.name" class="slot-details">
+    <div
+      v-for="product in order.products"
+      :key="product.name"
+      class="slot-details"
+    >
       <div class="slot-image">
         <img class="slot-image" :src="resolveImageUrl(product.name)" />
       </div>
       <div class="slot-details-product">
-        <div><span class="attribute">Order ID:</span> {{ orderID }}</div>
+        <div><span class="attribute">Order ID:</span> {{ order.orderID }}</div>
         <div><span class="attribute">Producing:</span> {{ product.name }}</div>
         <div>
           <span class="attribute">Estimated Time:</span>
@@ -26,24 +29,41 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Emit, Mixins, Prop, Vue } from "vue-property-decorator";
 import { Product } from "@/types/Product";
+import ResolveImageUrlMixin from "@/mixins/ResolveImageUrlMixin.vue";
+import { Order } from "@/types/Order";
 @Component({
-  name: "ProductionItem",
+  name: "OrderItem",
 })
-export default class ProductionItem extends Vue {
-  @Prop() orderID!: number;
-  @Prop() products!: Array<Product>;
-  @Prop() slotNum!: number;
+export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
+  @Prop() order!: Order;
+  orderTotalTime = 0;
+  @Emit("delete-order")
+  orderTimeOver(): void {
+    //todo: no content
+    console.log("delete-order");
+  }
+
+  created() {
+    for (let i = 0; i < this.order.products.length; i++) {
+      for (let j = 0; j < this.order.products[i].materials.length; j++) {
+        this.orderTotalTime += this.order.products[i].materials[
+          j
+        ].productionTime;
+      }
+    }
+    setTimeout(this.orderTimeOver, this.orderTotalTime + 3000);
+  }
 
   resolveImageUrl(imageName: string): string {
-    const images = require.context("../../images/", false, /\.jpg$/);
-    return images(`./${imageName}.jpg`);
+    return this.resolveImageUrlMixin(imageName);
   }
 
   totalTime(product: Product): number {
     return product.materials.reduce<number>((carry, material) => {
       carry += material.productionTime;
+      // this.orderTotalTime += carry;//may cause infinity loop
       return carry;
     }, 0);
   }
@@ -51,6 +71,9 @@ export default class ProductionItem extends Vue {
 </script>
 
 <style scoped lang="scss">
+.container {
+  margin-top: 5px;
+}
 .slot-num {
   margin-top: 10px;
 }
