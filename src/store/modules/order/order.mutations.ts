@@ -7,7 +7,7 @@ import {
 
 export const mutations = {
   [ADD_NEW_ORDER](state: OrderStateInterface, order: Order): void {
-    state.orders.push(order);
+    state.orders.push({ ...order, orderID: state.currentOrderId });
   },
   [INCREASE_ORDER_ID](state: OrderStateInterface): void {
     state.currentOrderId++;

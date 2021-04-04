@@ -19,8 +19,11 @@
       <div class="slot-details-status">
         <span class="attribute">Production Status:</span>
         <div class="status-images">
-          <div v-for="material in product.materials" :key="material.id">
-            <img class="status-image" :src="resolveImageUrl(material.id)" />
+          <div v-for="material in product.materials" :key="material.material">
+            <img
+              class="status-image"
+              :src="resolveImageUrl(material.material)"
+            />
           </div>
         </div>
       </div>
@@ -33,11 +36,18 @@ import { Component, Emit, Mixins, Prop } from "vue-property-decorator";
 import { Product } from "@/types/Product";
 import ResolveImageUrlMixin from "@/mixins/ResolveImageUrlMixin.vue";
 import { Order } from "@/types/Order";
+import { Material } from "@/types/Material";
+import { namespace } from "vuex-class";
+const ProductModule = namespace("product");
 
 @Component({
   name: "OrderItem",
 })
 export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
+  @ProductModule.Getter("materialsKeyedById") materials!: Record<
+    string,
+    Material
+  >;
   @Prop() order!: Order;
   orderTotalTime = 0;
   @Emit("delete-order")
@@ -49,9 +59,11 @@ export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
   created() {
     for (let i = 0; i < this.order.products.length; i++) {
       for (let j = 0; j < this.order.products[i].materials.length; j++) {
-        this.orderTotalTime += this.order.products[i].materials[
-          j
-        ].productionTime;
+        let material = this.materials[
+          this.order.products[i].materials[j].material
+        ];
+
+        this.orderTotalTime += material.productionTime;
       }
     }
     setTimeout(this.orderTimeOver, this.orderTotalTime + 5000);
@@ -63,7 +75,8 @@ export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
 
   productTotalTime(product: Product): number {
     return product.materials.reduce<number>((carry, material) => {
-      carry += material.productionTime;
+      let materialFromDictionary = this.materials[material.material];
+      carry += materialFromDictionary.productionTime;
       // this.orderTotalTime += carry;//may cause infinity loop
       return carry;
     }, 0);

@@ -170,7 +170,7 @@
           v-for="material in product.materials"
           :key="material.material"
         >
-          {{ material.name }}
+          {{ material.material }}
         </div>
       </div>
       <div class="field">
@@ -218,6 +218,7 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   selectedProduct: Nullable<Product> = null;
   productsSummary: Array<Product> = [];
   selectedOptionalMaterials: Array<Material> = [];
+  selectedProductMaterials: Array<ProductMaterial> = [];
   showDialog = false;
   modalContent = "";
 
@@ -239,9 +240,6 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
       .materials;
     return selectedProductMaterials.reduce<Array<ProductMaterial>>(
       (carry, productMaterial) => {
-        // const material = this.materials.find(
-        //   (material) => material.id === productMaterial.material
-        // );
         const material = this.materials[productMaterial.material.toString()];
 
         if (material) {
@@ -296,49 +294,55 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   }
 
   updateOrder(): void {
-    //todo: check id.toString()
-
-    // this.selectedOptionalMaterials = this.selectedOptionalMaterials.map(
-    //   (selectedMaterial) =>
-    //     // this.materials.find(
-    //     //   (material) => material.id.toString() === selectedMaterial
-    //     // )
-    //     this.materials[selectedMaterial.name]
-    // );
-
-    this.selectedOptionalMaterials = this.selectedOptionalMaterials.reduce<
-      Array<Material>
-    >((carry, selectedMaterial) => {
-      if (selectedMaterial) {
-        carry.push(this.materials[selectedMaterial.name]);
-      }
-      return carry;
-    }, []);
-
-    const mustMaterials = this.selectedProduct?.materials
-      .filter((material) => material.isMust)
-      .reduce<Array<Material>>((carry, material) => {
-        if (material) {
-          carry.push(this.materials[material.name]);
+    if (this.selectedProduct) {
+      console.log(this.selectedOptionalMaterials);
+      this.selectedOptionalMaterials = this.selectedOptionalMaterials.reduce<
+        Array<Material>
+      >((carry, selectedMaterial) => {
+        if (selectedMaterial) {
+          carry.push(this.materials[selectedMaterial]);
         }
         return carry;
       }, []);
-    // .map(
-    //   (mustMaterial) =>
-    //     // this.materials.find((material) => material.id === mustMaterial.material)
-    //     this.materials[mustMaterial.material.toString()]
-    // );
 
-    this.selectedOptionalMaterials = this.selectedOptionalMaterials.concat(
-      mustMaterials
-    );
+      console.log(this.selectedOptionalMaterials);
+      const mustMaterials = this.selectedProduct.materials
+        .filter((material) => material.isMust)
+        .reduce<Array<Material>>((carry, material) => {
+          if (material) {
+            carry.push(this.materials[material.material]);
+          }
+          return carry;
+        }, []);
 
-    this.productsSummary.push({
-      ...this.selectedProduct,
-      materials: this.selectedOptionalMaterials,
-    });
-    console.log(this.productsSummary);
-    this.resetProduct();
+      this.selectedOptionalMaterials = this.selectedOptionalMaterials.concat(
+        mustMaterials
+      );
+
+      this.selectedProductMaterials = this.selectedOptionalMaterials.reduce<
+        Array<ProductMaterial>
+      >((carry, selectedProductMaterial) => {
+        if ( this.selectedProduct && selectedProductMaterial) {
+          const productMaterial: ProductMaterial | undefined = this.selectedProduct.materials.find(
+            (material) => material.material === selectedProductMaterial.id
+          );
+          if (productMaterial) {
+            carry.push({
+              material: selectedProductMaterial.id,
+              isMust: productMaterial.isMust,
+            });
+          }
+        }
+        return carry;
+      }, []);
+
+      this.productsSummary.push({
+        ...this.selectedProduct,
+        materials: this.selectedProductMaterials,
+      });
+      console.log(this.productsSummary);
+      this.resetProduct();
+    }
   }
 
   resetProduct(): void {

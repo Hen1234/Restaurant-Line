@@ -28,10 +28,6 @@ const DeliveryModule = namespace("delivery");
 export default class SlotItem extends Vue {
   @Prop() slotNum!: number;
   @SlotModule.State((state) => state.slots) slots!: Array<Slot>;
-  // @SlotModule.Action("deleteOrderFromSlot") deleteOrderFromSlot!: ({
-  //   slotID: number,
-  //   index: number,
-  // }) => void;
   @SlotModule.Action("deleteOrderFromSlot") deleteOrderFromSlot!: ({
     slotID,
     index,
