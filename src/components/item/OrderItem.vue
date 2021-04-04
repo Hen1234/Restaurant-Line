@@ -56,7 +56,7 @@ export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
     console.log("delete-order");
   }
 
-  created() {
+  created(): void {
     for (let i = 0; i < this.order.products.length; i++) {
       for (let j = 0; j < this.order.products[i].materials.length; j++) {
         let material = this.materials[

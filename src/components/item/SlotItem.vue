@@ -18,6 +18,7 @@ import OrderItem from "@/components/item/OrderItem.vue";
 import { namespace } from "vuex-class";
 import { Slot } from "@/types/Slot";
 import { Delivery } from "@/types/Delivery";
+import { Order } from "@/types/Order";
 const SlotModule = namespace("slot");
 const DeliveryModule = namespace("delivery");
 
@@ -39,7 +40,7 @@ export default class SlotItem extends Vue {
     delivery: Delivery
   ) => void;
 
-  get orders() {
+  get orders(): Order[] {
     return this.slots[this.slotNum - 1].orders;
   }
   get emptySLot(): boolean {

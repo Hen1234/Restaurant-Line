@@ -7,7 +7,7 @@
         <div class="field">
           <input
             class="field-input"
-            :class="{ invalid: inputValidity('customerName') }"
+            :class="{ invalid: this.errors.customerName }"
             id="full-name"
             type="text"
             v-model="customerName"
@@ -17,7 +17,7 @@
         <div class="field">
           <input
             class="field-input"
-            :class="{ invalid: inputValidity('customerPhone') }"
+            :class="{ invalid: this.errors.customerPhone }"
             id="phone"
             type="text"
             v-model="customerPhone"
@@ -27,7 +27,7 @@
         <div class="field">
           <input
             class="field-input"
-            :class="{ invalid: inputValidity('customerStreet1') }"
+            :class="{ invalid: this.errors.customerStreet1 }"
             id="street"
             type="text"
             v-model="customerStreet1"
@@ -46,7 +46,7 @@
         <div class="field">
           <input
             class="field-input-address"
-            :class="{ invalid: inputValidity('customerCity') }"
+            :class="{ invalid: this.errors.customerCity }"
             id="city"
             type="text"
             v-model="customerCity"
@@ -54,7 +54,7 @@
           />
           <input
             class="field-input-address-right-state"
-            :class="{ invalid: inputValidity('customerState') }"
+            :class="{ invalid: this.errors.customerState }"
             id="state"
             type="text"
             v-model="customerState"
@@ -64,7 +64,7 @@
         <div class="field">
           <input
             class="field-input-address"
-            :class="{ invalid: inputValidity('customerZipCode') }"
+            :class="{ invalid: this.errors.customerZipCode }"
             id="zip"
             type="text"
             v-model="customerZipCode"
@@ -72,7 +72,7 @@
           />
           <select
             class="field-input-address-right-country"
-            :class="{ invalid: inputValidity('customerCountry') }"
+            :class="{ invalid: this.errors.customerCountry }"
             id="country"
             v-model="customerCountry"
           >
@@ -217,11 +217,13 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   @OrderModule.State((state) => state.orders) orders!: Array<Order>;
   selectedProduct: Nullable<Product> = null;
   productsSummary: Array<Product> = [];
-  selectedOptionalMaterials: Array<Material> = [];
+  selectedOptionalMaterials: Array<string> = [];
   selectedProductMaterials: Array<ProductMaterial> = [];
   showDialog = false;
   modalContent = "";
+  errors: Record<string, boolean> = {};
 
+  // Forms models.
   customerPhone = "";
   customerStreet1 = "";
   customerStreet2 = "";
@@ -255,8 +257,6 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   }
 
   get optionalProductMaterials(): ProductMaterial[] {
-    console.log(this.productMaterials);
-    console.log(this.productMaterials.filter((material) => !material.isMust));
     return this.productMaterials.filter((material) => !material.isMust);
   }
 
@@ -268,11 +268,6 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
     return this.selectedProduct ? this.selectedProduct.name : "";
   }
 
-  inputValidity(inputName: string): boolean {
-    // console.log(`${this[inputName]}`);
-    // return this[inputName] === "";
-    return `${this[inputName]}` === "";
-  }
   productChangeHandler(event: Event): void {
     const selectedProductName = (event.target as HTMLInputElement).value;
     const selectedProduct = this.products.find(
@@ -290,42 +285,49 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
 
   hideDialog(): void {
     this.showDialog = false;
-    if (this.validateForm()) this.$router.push("/");
+    if (this.validateForm()) {
+      this.$router.push("/");
+    }
+  }
+
+  getSelectedProductMaterials(): Material[] {
+    // Gather all of the optional materials.
+    const selectedOptionalMaterials = this.selectedOptionalMaterials.reduce<
+      Array<Material>
+    >((carry, selectedMaterial) => {
+      if (selectedMaterial) {
+        carry.push(this.materials[selectedMaterial]);
+      }
+      return carry;
+    }, []);
+
+    // Gather all of the "must" materials.
+    const mustMaterials = this.selectedProduct
+      ? this.selectedProduct.materials
+          .filter((material) => material.isMust)
+          .reduce<Array<Material>>((carry, material) => {
+            if (material) {
+              carry.push(this.materials[material.material]);
+            }
+            return carry;
+          }, [])
+      : [];
+
+    return [...selectedOptionalMaterials, ...mustMaterials];
   }
 
   updateOrder(): void {
     if (this.selectedProduct) {
-      console.log(this.selectedOptionalMaterials);
-      this.selectedOptionalMaterials = this.selectedOptionalMaterials.reduce<
-        Array<Material>
-      >((carry, selectedMaterial) => {
-        if (selectedMaterial) {
-          carry.push(this.materials[selectedMaterial]);
-        }
-        return carry;
-      }, []);
-
-      console.log(this.selectedOptionalMaterials);
-      const mustMaterials = this.selectedProduct.materials
-        .filter((material) => material.isMust)
-        .reduce<Array<Material>>((carry, material) => {
-          if (material) {
-            carry.push(this.materials[material.material]);
-          }
-          return carry;
-        }, []);
-
-      this.selectedOptionalMaterials = this.selectedOptionalMaterials.concat(
-        mustMaterials
-      );
-
-      this.selectedProductMaterials = this.selectedOptionalMaterials.reduce<
+      this.selectedProductMaterials = this.getSelectedProductMaterials().reduce<
         Array<ProductMaterial>
       >((carry, selectedProductMaterial) => {
-        if ( this.selectedProduct && selectedProductMaterial) {
-          const productMaterial: ProductMaterial | undefined = this.selectedProduct.materials.find(
+        if (this.selectedProduct && selectedProductMaterial) {
+          const productMaterial:
+            | ProductMaterial
+            | undefined = this.selectedProduct.materials.find(
             (material) => material.material === selectedProductMaterial.id
           );
+
           if (productMaterial) {
             carry.push({
               material: selectedProductMaterial.id,
@@ -340,7 +342,6 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
         ...this.selectedProduct,
         materials: this.selectedProductMaterials,
       });
-      console.log(this.productsSummary);
       this.resetProduct();
     }
   }
@@ -380,18 +381,18 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   }
 
   validateForm(): boolean {
-    if (
-      this.customerName === "" ||
-      this.customerPhone === "" ||
-      this.customerStreet1 === "" ||
-      this.customerCountry === "" ||
-      this.customerZipCode === "" ||
-      this.customerState === "" ||
-      this.customerCity === ""
-    ) {
-      return false;
-    }
-    return true;
+    // Validating the fields - not the best practice, just the rough idea.
+    this.errors.customerName = this.customerName === "";
+    this.errors.customerPhone = this.customerPhone === "";
+    this.errors.customerStreet1 = this.customerStreet1 === "";
+    this.errors.customerCountry = this.customerCountry === "";
+    this.errors.customerZipCode = this.customerZipCode === "";
+    this.errors.customerState = this.customerState === "";
+    this.errors.customerCity = this.customerCity === "";
+
+    return !Object.keys(this.errors).some(
+      (fieldName) => this.errors[fieldName]
+    );
   }
 }
 </script>
