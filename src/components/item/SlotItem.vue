@@ -17,12 +17,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Emit, Prop, Vue } from "vue-property-decorator";
 import OrderItem from "@/components/item/OrderItem.vue";
 import { namespace } from "vuex-class";
 import { Slot } from "@/types/Slot";
 import { Delivery } from "@/types/Delivery";
-import { Order } from "@/types/Order";
+import { Order, OrderStatus } from "@/types/Order";
+
 const SlotModule = namespace("slot");
 const DeliveryModule = namespace("delivery");
 
@@ -44,6 +45,12 @@ export default class SlotItem extends Vue {
     delivery: Delivery
   ) => void;
 
+  @Emit("vacantSlot")
+  vacantSlot($event, orderID: number): void {
+    this.$emit("vacantSlot", orderID)
+    console.log(`vacant slot${this.slotNum}`);
+
+  }
   get orders(): Order[] {
     return this.slots[this.slotNum - 1].orders;
   }
@@ -52,10 +59,12 @@ export default class SlotItem extends Vue {
   }
 
   deleteThisOrder(index: number, orderID: number): void {
+    console.log(orderID);
     console.log(`order ${index}is deleted`);
     // this.ordersSlot.splice(this.ordersSlot[index]);
     // this.ordersSlot[index] = undefined;
     this.deleteOrderFromSlot({ slotID: this.slotNum - 1, index });
+    this.vacantSlot(event, orderID);
     this.addNewDelivery({
       orderID,
       time: "00:00:00",

@@ -7,6 +7,7 @@
       :key="slot.slotID"
       :ordersSlot="slot.orders"
       :slot-num="slot.slotID"
+      @vacantSlot="vacantSlot(event, slot.slotID)"
     />
   </div>
 </template>
@@ -16,7 +17,7 @@ import ProductionItem from "@/components/item/OrderItem.vue";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Slot } from "@/types/Slot.ts";
 import { namespace } from "vuex-class";
-import { Order } from "@/types/Order";
+import { Order, OrderStatus } from "@/types/Order";
 import SlotItem from "@/components/item/SlotItem.vue";
 
 const OrderModule = namespace("order");
@@ -29,7 +30,8 @@ const SlotModule = namespace("slot");
   },
 })
 export default class ProductionStatus extends Vue {
-  @OrderModule.Getter("readyToBeProduced") orders!: Array<Order>;
+  @OrderModule.Getter("readyToBeProduced") readyToBeProducedOrders!: Array<Order>;
+  @OrderModule.Getter("BeingPrepared") BeingPreparedOrders!: Array<Order>;
   @OrderModule.State((state) => state.currentOrderId)
   currentOrderId!: number;
   @SlotModule.State((state) => state.slots) slots!: Array<Slot>;
@@ -44,15 +46,46 @@ export default class ProductionStatus extends Vue {
 
   @Watch("currentOrderId", { deep: true })
   newOrderWatcher(newOrderId: number): void {
-    console.log("Okay");
     this.processNewOrder(newOrderId);
   }
 
   processNewOrder(orderID: number): void {
-    const vacantSlot = this.slots.find((slot) => slot.orders.length === 0);
+    const vacantSlot = this.slots.find(
+      (slot) =>
+        slot.orders.length === 0 || slot.produceCapacity > slot.orders.length
+    );
 
     if (vacantSlot) {
-      // this.addOrderToSlot();
+      this.addOrderToSlot({
+        order: this.readyToBeProducedOrders[this.readyToBeProducedOrders.length - 1],
+        slotID: vacantSlot.slotID,
+      });
+      this.readyToBeProducedOrders[this.readyToBeProducedOrders.length - 1].status = OrderStatus.BeingPrepared;
+    }
+  }
+
+  vacantSlot(orderID: number, slotID: number): void {
+    console.log(orderID);
+    console.log(slotID)
+    console.log(this.BeingPreparedOrders)
+    const preparedOrder = this.BeingPreparedOrders.find(
+      (order) => order.orderID === orderID
+    );
+    if (preparedOrder) {
+      console.log("readeForDelivery");
+      preparedOrder.status = OrderStatus.ReadyForDelivery;
+    }
+    if (this.readyToBeProducedOrders) {
+      const unHandledOrder = this.readyToBeProducedOrders.find(
+        (order) => order.status === OrderStatus.ReadyToBeProduced
+      );
+      if (unHandledOrder) {
+        this.addOrderToSlot({
+          order: this.readyToBeProducedOrders[this.readyToBeProducedOrders.length - 1],
+          slotID: slotID,
+        });
+        unHandledOrder.status = OrderStatus.BeingPrepared;
+      }
     }
   }
   //   if (this.ordersState.length !== 0) {

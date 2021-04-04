@@ -4,7 +4,8 @@ import { MutationTree } from "vuex";
 
 export const mutations: MutationTree<SlotStateInterface> = {
   addNewOrder(state, payload: { order: Order; slotID: number }): void {
-    state.slots[payload.slotID - 1].orders.push(payload.order);
+    console.log(payload.slotID)
+    state.slots[payload.slotID-1].orders.push(payload.order);
   },
 
   deleteOrder(state, payload: { slotID: number; index: number }): void {

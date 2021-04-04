@@ -233,6 +233,11 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   customerCountry = "";
   customerComments = "";
 
+  created(): void {
+    console.log("hereCreated");
+    this.productsSummary = [];
+  }
+
   get productMaterials(): Array<ProductMaterial> {
     if (!this.selectedProduct) {
       return [];
@@ -375,6 +380,7 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
       });
       this.modalContent = "Yor order has been submitted";
       this.showDialog = true;
+      this.productsSummary = [];
     } else {
       this.modalContent = "Yor have to fill all the marked fields";
       this.showDialog = true;

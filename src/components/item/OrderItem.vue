@@ -66,7 +66,7 @@ export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
         this.orderTotalTime += material.productionTime;
       }
     }
-    setTimeout(this.orderTimeOver, this.orderTotalTime + 5000);
+    setTimeout(this.orderTimeOver, this.orderTotalTime);
   }
 
   resolveImageUrl(imageName: string): string {
