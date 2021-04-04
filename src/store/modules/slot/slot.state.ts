@@ -5,8 +5,5 @@ export interface SlotStateInterface {
 }
 
 export const state: SlotStateInterface = {
-  slots: [
-    { slotID: 1, totalCount: 2, orders: [] },
-    { slotID: 2, totalCount: 1, orders: [] },
-  ],
+  slots: [],
 };

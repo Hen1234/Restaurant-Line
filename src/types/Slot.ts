@@ -1,5 +1,5 @@
 import { Product } from "@/types/Product";
-import {Order} from "@/types/Order";
+import { Order } from "@/types/Order";
 
 export interface Slot {
   // image: string;
@@ -9,6 +9,6 @@ export interface Slot {
   // status: string;
   // isAvailable: boolean;
   slotID: number;
-  totalCount: number;
-  orders: Array<Order>
+  produceCapacity: number;
+  orders: Array<Order>;
 }

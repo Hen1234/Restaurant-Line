@@ -1,15 +1,13 @@
 <template>
   <div class="container">
     <span class="header">Production Status</span>
-    <div class="slots" v-if="!isOrdersEmpty">
-      <SlotItem
-        v-for="slot in slots"
-        :key="slot.slotID"
-        :ordersSlot="slot.orders"
-        :slot-num="slot.slotID"
-      />
-    </div>
-    <div class="noOrdersToShow" v-if="isOrdersEmpty">No orders on slots</div>
+    <button class="newSlotButton" @click="addNewSlot">Add New Slot</button>
+    <SlotItem
+      v-for="slot in slots"
+      :key="slot.slotID"
+      :ordersSlot="slot.orders"
+      :slot-num="slot.slotID"
+    />
   </div>
 </template>
 
@@ -31,14 +29,10 @@ const SlotModule = namespace("slot");
   },
 })
 export default class ProductionStatus extends Vue {
-  @OrderModule.State((state) => state.orders) ordersState!: Array<Order>;
+  @OrderModule.Getter("readyToBeProduced") orders!: Array<Order>;
   @OrderModule.State((state) => state.currentOrderId)
-  currentOrderIdState!: number;
+  currentOrderId!: number;
   @SlotModule.State((state) => state.slots) slots!: Array<Slot>;
-  // @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({
-  //   order: Order,
-  //   slotID: number,
-  // }) => void;
   @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({
     order,
     slotID,
@@ -46,40 +40,35 @@ export default class ProductionStatus extends Vue {
     order: Order;
     slotID: number;
   }) => void;
+  @SlotModule.Action("addNewSlot") addNewSlot!: () => void;
 
-  created(): void {
-    console.log(this.currentOrderIdState);
-    this.newOrder();
-  }
-  get isOrdersEmpty(): boolean {
-    return this.ordersState.length === 0;
-  }
-  @Watch("orderStateLength", { deep: true })
-  newOrderWatcher(value: string, oldValue: string): void {
-    console.log(`new order!!!!1${value}`);
+  @Watch("currentOrderId", { deep: true })
+  newOrderWatcher(newOrderId: number): void {
+    console.log("Okay");
+    this.processNewOrder(newOrderId);
   }
 
-  get orderStateLength(): number {
-    // console.log(this.ordersState.length);
-    // return this.ordersState.length;
-    return this.currentOrderIdState;
-  }
+  processNewOrder(orderID: number): void {
+    const vacantSlot = this.slots.find((slot) => slot.orders.length === 0);
 
-  newOrder(): void {
-    if (this.ordersState.length !== 0) {
-      if (this.slots[0].totalCount === this.slots[0].orders.length) {
-        this.addOrderToSlot({
-          order: this.ordersState[this.ordersState.length - 1],
-          slotID: 2,
-        });
-      } else {
-        this.addOrderToSlot({
-          order: this.ordersState[this.ordersState.length - 1],
-          slotID: 1,
-        });
-      }
+    if (vacantSlot) {
+      // this.addOrderToSlot();
     }
   }
+  //   if (this.ordersState.length !== 0) {
+  //     if (this.slots[0].produceCapacity === this.slots[0].orders.length) {
+  //       this.addOrderToSlot({
+  //         order: this.ordersState[this.ordersState.length - 1],
+  //         slotID: 2,
+  //       });
+  //     } else {
+  //       this.addOrderToSlot({
+  //         order: this.ordersState[this.ordersState.length - 1],
+  //         slotID: 1,
+  //       });
+  //     }
+  //   }
+  // }
 }
 </script>
 
@@ -95,5 +84,9 @@ export default class ProductionStatus extends Vue {
   align-items: center;
   margin-top: 20px;
   font-size: 15px;
+}
+
+.newSlotButton {
+  margin-left: 5px;
 }
 </style>

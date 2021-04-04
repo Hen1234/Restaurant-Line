@@ -1,39 +1,32 @@
 <template>
   <div class="home">
-    <!--    <router-view></router-view>-->
     <div class="header">
-      <the-header></the-header>
+      <TheHeader />
     </div>
     <div class="menu-and-content">
-      <the-menu></the-menu>
-      <the-content></the-content>
+      <TheMenu />
+      <div class="content">
+        <KeepAlive>
+          <RouterView />
+        </KeepAlive>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import TheHeader from "@/components/layout/TheHeader.vue"; // @ is an alias to /src
 import TheMenu from "@/components/layout/TheMenu.vue";
-import TheContent from "@/components/layout/TheContent.vue";
 
 @Component({
-  name: "Home",
+  name: "MainLayout",
   components: {
     TheHeader,
     TheMenu,
-    TheContent,
   },
 })
-export default class Home extends Vue {
-  // @Prop({
-  //   type: String,
-  //   required: true
-  // }) name: number;
-  // helloWorld() {
-  //   console.log(`Hello ${this.name}, how are you?`);
-  // }
-}
+export default class MainLayout extends Vue {}
 </script>
 
 <style scoped>
@@ -46,6 +39,13 @@ export default class Home extends Vue {
 
 .menu-and-content {
   display: flex;
+  flex: 1;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
   flex: 1;
 }
 </style>

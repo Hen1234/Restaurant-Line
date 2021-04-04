@@ -1,28 +1,25 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "../views/Home.vue";
-import TheContent from "@/components/layout/TheContent.vue";
+import Home from "../pages/Home.vue";
 import NewOrder from "@/pages/NewOrder.vue";
+import MainLayout from "@/layout/MainLayout.vue";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: "/",
-    name: "Home",
-    component: Home,
+    path: "",
+    component: MainLayout,
     children: [
       {
-        path: "/content",
-        name: "TheContent",
-        component: TheContent,
-        children: [
-          {
-            path: "/new-order",
-            name: "NewOrder",
-            component: NewOrder,
-          },
-        ],
+        path: "/",
+        name: "Home",
+        component: Home,
+      },
+      {
+        path: "/new-order",
+        name: "NewOrder",
+        component: NewOrder,
       },
     ],
   },

@@ -1,14 +1,18 @@
 <template>
-  <div v-if="!emptySLot" class="container">
+  <div class="container">
     <div class="slot-num">Production Slot #{{ slotNum }}</div>
-    <order-item
-      class="orders"
-      v-for="(order, index) in orders"
-      @delete-order="deleteThisOrder(index, order.orderID)"
-      :key="order.orderID"
-      :order="order"
-    >
-    </order-item>
+    <template v-if="isSlotEmpty">
+      <div>Ready for produce.</div>
+    </template>
+    <template v-else>
+      <OrderItem
+        class="orders"
+        v-for="(order, index) in orders"
+        @delete-order="deleteThisOrder(index, order.orderID)"
+        :key="order.orderID"
+        :order="order"
+      />
+    </template>
   </div>
 </template>
 
@@ -43,7 +47,7 @@ export default class SlotItem extends Vue {
   get orders(): Order[] {
     return this.slots[this.slotNum - 1].orders;
   }
-  get emptySLot(): boolean {
+  get isSlotEmpty(): boolean {
     return this.orders.length === 0;
   }
 

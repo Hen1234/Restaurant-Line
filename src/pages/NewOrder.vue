@@ -192,7 +192,7 @@ import { Material } from "@/types/Material";
 import { Product } from "@/types/Product";
 import { ProductMaterial } from "@/types/ProductMaterial";
 import ProductionItem from "@/components/item/OrderItem.vue";
-import { Order } from "@/types/Order";
+import { Order, OrderStatus } from "@/types/Order";
 import BaseDialog from "@/components/ui/BaseDialog.vue";
 import { Nullable } from "@/types/utility.types";
 import ResolveImageUrlMixin from "@/mixins/ResolveImageUrlMixin.vue";
@@ -371,6 +371,7 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
         products: this.productsSummary,
         customer: newCustomer,
         comments: this.customerComments,
+        status: OrderStatus.ReadyToBeProduced,
       });
       this.modalContent = "Yor order has been submitted";
       this.showDialog = true;
