@@ -1,10 +1,9 @@
-import {Delivery} from "@/types/Delivery";
+import { Delivery } from "@/types/Delivery";
 
-export interface DeliveryStateInterface{
-    deliveries: Array<Delivery>
+export interface DeliveryStateInterface {
+  deliveries: Array<Delivery>;
 }
 
 export const state: DeliveryStateInterface = {
-    deliveries: []
-
-}
+  deliveries: [],
+};

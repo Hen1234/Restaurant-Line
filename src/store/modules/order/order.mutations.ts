@@ -1,14 +1,15 @@
 import { OrderStateInterface } from "@/store/modules/order/order.state";
-import {Product} from "@/types/Product";
-import {Customer} from "@/types/Customer";
-import {Order} from "@/types/Order";
+import { Order } from "@/types/Order";
+import {
+  ADD_NEW_ORDER,
+  INCREASE_ORDER_ID,
+} from "@/store/modules/order/mutationTypes";
 
 export const mutations = {
-  addNewOrder(state: OrderStateInterface, order: Order): void {
+  [ADD_NEW_ORDER](state: OrderStateInterface, order: Order): void {
+    state.orders.push(order);
+  },
+  [INCREASE_ORDER_ID](state: OrderStateInterface): void {
     state.currentOrderId++;
-    const tempStateForReactive = state.orders;
-    tempStateForReactive.push({...order,orderID: state.currentOrderId} );
-    state.orders = [...tempStateForReactive]
-    // state.orders.push({orderID: state.currentOrderId, products: products});
   },
 };

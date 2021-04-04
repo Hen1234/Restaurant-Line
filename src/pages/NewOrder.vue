@@ -186,7 +186,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Vue } from "vue-property-decorator";
+import { Component, Mixins } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import { Material } from "@/types/Material";
 import { Product } from "@/types/Product";
@@ -206,12 +206,13 @@ const OrderModule = namespace("order");
 })
 export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   customerName = "";
-  @OrderModule.Action("addNewOrderAction") addOrder!: (order: Order) => void;
+  @OrderModule.Action("addNewOrder") addOrder!: (order: Order) => void;
   @ProductModule.State((state) => state.products) products!: Array<Product>;
   // @ProductModule.State((state) => state.materials) materials!: Array<Material>;
-  @ProductModule.Getter("materialsKeyedById") materials!: {
-    [id: string]: Material;
-  };
+  @ProductModule.Getter("materialsKeyedById") materials!: Record<
+    string,
+    Material
+  >;
   @OrderModule.State((state) => state.currentOrderId) orderCounter!: number;
   @OrderModule.State((state) => state.orders) orders!: Array<Order>;
   selectedProduct: Nullable<Product> = null;
@@ -338,7 +339,6 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
     });
     console.log(this.productsSummary);
     this.resetProduct();
-
   }
 
   resetProduct(): void {

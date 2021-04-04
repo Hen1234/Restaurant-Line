@@ -29,10 +29,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Mixins, Prop, Vue } from "vue-property-decorator";
+import { Component, Emit, Mixins, Prop } from "vue-property-decorator";
 import { Product } from "@/types/Product";
 import ResolveImageUrlMixin from "@/mixins/ResolveImageUrlMixin.vue";
 import { Order } from "@/types/Order";
+
 @Component({
   name: "OrderItem",
 })

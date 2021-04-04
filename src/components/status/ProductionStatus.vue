@@ -2,12 +2,12 @@
   <div class="container">
     <span class="header">Production Status</span>
     <div class="slots" v-if="!isOrdersEmpty">
-      <slot-item
+      <SlotItem
         v-for="slot in slots"
         :key="slot.slotID"
         :ordersSlot="slot.orders"
         :slot-num="slot.slotID"
-      ></slot-item>
+      />
     </div>
     <div class="noOrdersToShow" v-if="isOrdersEmpty">No orders on slots</div>
   </div>
@@ -39,7 +39,13 @@ export default class ProductionStatus extends Vue {
   //   order: Order,
   //   slotID: number,
   // }) => void;
-  @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({order, slotID}:{order: Order, slotID: number}) => void;
+  @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({
+    order,
+    slotID,
+  }: {
+    order: Order;
+    slotID: number;
+  }) => void;
 
   created(): void {
     console.log(this.currentOrderIdState);

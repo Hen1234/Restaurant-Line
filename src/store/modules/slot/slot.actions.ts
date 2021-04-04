@@ -1,18 +1,19 @@
-import { ActionContext } from "vuex";
+import { ActionTree } from "vuex";
 import { Order } from "@/types/Order";
+import { SlotStateInterface } from "@/store/modules/slot/slot.state";
+import { AppState } from "@/store";
 
-export const actions = {
+export const actions: ActionTree<SlotStateInterface, AppState> = {
   addNewOrderToSlotAction(
-    context: ActionContext<any, any>,
+    { commit },
     payload: { order: Order; slotID: number }
   ): void {
-    context.commit("addNewOrder", payload);
+    commit("addNewOrder", payload);
   },
-
   deleteOrderFromSlot(
-    context: ActionContext<any, any>,
+    { commit },
     payload: { slotID: number; index: number }
   ): void {
-    context.commit("deleteOrder", payload);
+    commit("deleteOrder", payload);
   },
 };

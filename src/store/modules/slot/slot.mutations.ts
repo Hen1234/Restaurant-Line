@@ -1,4 +1,3 @@
-import { OrderStateInterface } from "@/store/modules/order/order.state";
 import { Order } from "@/types/Order";
 import { SlotStateInterface } from "@/store/modules/slot/slot.state";
 

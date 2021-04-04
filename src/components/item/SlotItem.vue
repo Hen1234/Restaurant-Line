@@ -32,7 +32,13 @@ export default class SlotItem extends Vue {
   //   slotID: number,
   //   index: number,
   // }) => void;
-  @SlotModule.Action("deleteOrderFromSlot") deleteOrderFromSlot!: ({slotID, index}:{slotID: number, index: number}) => void;
+  @SlotModule.Action("deleteOrderFromSlot") deleteOrderFromSlot!: ({
+    slotID,
+    index,
+  }: {
+    slotID: number;
+    index: number;
+  }) => void;
   @DeliveryModule.Action("addDeliveryAction") addNewDelivery!: (
     delivery: Delivery
   ) => void;

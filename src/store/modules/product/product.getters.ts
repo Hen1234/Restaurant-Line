@@ -1,31 +1,11 @@
 import { GetterTree } from "vuex";
 import { ProductStateInterface } from "@/store/modules/product/product.state";
 import { AppState } from "@/store";
-import { Material, MaterialsIds } from "@/types/Material";
-import { ProductMaterial } from "@/types/ProductMaterial";
+import { Material } from "@/types/Material";
 
-// export interface MaterialObject{
-//   [MaterialId : MaterialsIds];
-// }
 export const getters: GetterTree<ProductStateInterface, AppState> = {
-  materialsKeyedById(state) {
-    // Current value
-    // [
-    //   { id: "tomato", name: "tomato", count: 50 },
-    //   { id: "onion", name: "onion", count: 100 },
-    //   { id: "steak", name: "steak", count: 30 },
-    //   { id: "lettuce", name: "lettuce", count: 20 },
-    //   { id: "cucumber", name: "cucumber", count: 50 },
-    //   { id: "mushroom", name: "mushroom", count: 20 },
-    // ];
-
-    // Should return
-    // {
-    //   tomato: { id: "tomato", name: "tomato", count: 50 },
-    //   onion: { id: "onion", name: "onion", count: 100 },
-    // };
-
-    return state.materials.reduce<{ [id: string]: Material }>(
+  materialsKeyedById(state): Record<string, Material> {
+    return state.materials.reduce<Record<string, Material>>(
       (carry, material) => {
         return {
           ...carry,
@@ -34,7 +14,5 @@ export const getters: GetterTree<ProductStateInterface, AppState> = {
       },
       {}
     );
-
-    // return state.materials;
   },
 };

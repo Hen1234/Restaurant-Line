@@ -1,0 +1,2 @@
+export const INCREASE_ORDER_ID = "INCREASE_ORDER_ID";
+export const ADD_NEW_ORDER = "ADD_NEW_ORDER";

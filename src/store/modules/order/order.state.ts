@@ -1,5 +1,4 @@
 import { Order } from "@/types/Order";
-import { MaterialsIds } from "@/types/Material";
 
 export interface OrderStateInterface {
   orders: Array<Order>;
