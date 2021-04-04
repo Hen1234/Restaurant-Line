@@ -1,9 +1,12 @@
 import { GetterTree } from "vuex";
 import { ProductStateInterface } from "@/store/modules/product/product.state";
 import { AppState } from "@/store";
-import { Material } from "@/types/Material";
+import { Material, MaterialsIds } from "@/types/Material";
 import { ProductMaterial } from "@/types/ProductMaterial";
 
+// export interface MaterialObject{
+//   [MaterialId : MaterialsIds];
+// }
 export const getters: GetterTree<ProductStateInterface, AppState> = {
   materialsKeyedById(state) {
     // Current value
@@ -22,13 +25,16 @@ export const getters: GetterTree<ProductStateInterface, AppState> = {
     //   onion: { id: "onion", name: "onion", count: 100 },
     // };
 
-    // return state.materials.reduce<{}>((carry, material) => {
-    //   return {
-    //     ...carry,
-    //     [material.id]: material,
-    //   };
-    // }, {});
+    return state.materials.reduce<{ [id: string]: Material }>(
+      (carry, material) => {
+        return {
+          ...carry,
+          [material.id]: material,
+        };
+      },
+      {}
+    );
 
-    return state.materials;
+    // return state.materials;
   },
 };

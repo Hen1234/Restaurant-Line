@@ -13,7 +13,7 @@
         <div><span class="attribute">Producing:</span> {{ product.name }}</div>
         <div>
           <span class="attribute">Estimated Time:</span>
-          {{ totalTime(product) }} ms
+          {{ productTotalTime(product) }} ms
         </div>
       </div>
       <div class="slot-details-status">
@@ -53,14 +53,14 @@ export default class OrderItem extends Mixins(ResolveImageUrlMixin) {
         ].productionTime;
       }
     }
-    setTimeout(this.orderTimeOver, this.orderTotalTime + 3000);
+    setTimeout(this.orderTimeOver, this.orderTotalTime + 5000);
   }
 
   resolveImageUrl(imageName: string): string {
     return this.resolveImageUrlMixin(imageName);
   }
 
-  totalTime(product: Product): number {
+  productTotalTime(product: Product): number {
     return product.materials.reduce<number>((carry, material) => {
       carry += material.productionTime;
       // this.orderTotalTime += carry;//may cause infinity loop

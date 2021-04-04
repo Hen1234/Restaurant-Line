@@ -128,11 +128,11 @@
                   :key="material.name"
                   class="product-material"
                 >
-                  {{ material.name }}
+                  {{ material.material }}
                   <img
                     class="status-image"
-                    :src="resolveImageUrl(material.name)"
-                    v-bind:alt="material.name"
+                    :src="resolveImageUrl(material.material)"
+                    v-bind:alt="material.material"
                   />
                 </div>
               </div>
@@ -141,14 +141,14 @@
           <div class="field materials-option">
             <div
               v-for="material in optionalProductMaterials"
-              :key="material.name"
+              :key="material.material"
             >
               <input
-                :id="material.name"
+                :id="material.material"
                 type="checkbox"
                 v-model="selectedOptionalMaterials"
-                :value="material.name"
-              />{{ material.name }}
+                :value="material.material"
+              />{{ material.material }}
             </div>
           </div>
           <div class="field">
@@ -168,7 +168,7 @@
         <div
           class="order-product-materials"
           v-for="material in product.materials"
-          :key="material.id"
+          :key="material.material"
         >
           {{ material.name }}
         </div>
@@ -208,7 +208,10 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   customerName = "";
   @OrderModule.Action("addNewOrderAction") addOrder!: (order: Order) => void;
   @ProductModule.State((state) => state.products) products!: Array<Product>;
-  @ProductModule.State((state) => state.materials) materials!: Array<Material>;
+  // @ProductModule.State((state) => state.materials) materials!: Array<Material>;
+  @ProductModule.Getter("materialsKeyedById") materials!: {
+    [id: string]: Material;
+  };
   @OrderModule.State((state) => state.currentOrderId) orderCounter!: number;
   @OrderModule.State((state) => state.orders) orders!: Array<Order>;
   selectedProduct: Nullable<Product> = null;
@@ -226,31 +229,35 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   customerCountry = "";
   customerComments = "";
 
-  get productMaterials(): Array<Material & Pick<ProductMaterial, "isMust">> {
+  get productMaterials(): Array<ProductMaterial> {
     if (!this.selectedProduct) {
       return [];
     }
 
     const selectedProductMaterials: ProductMaterial[] = this.selectedProduct
       .materials;
-    return selectedProductMaterials.reduce<
-      Array<Material & Pick<ProductMaterial, "isMust">>
-    >((carry, productMaterial) => {
-      const material = this.materials.find(
-        (material) => material.id === productMaterial.material
-      );
+    return selectedProductMaterials.reduce<Array<ProductMaterial>>(
+      (carry, productMaterial) => {
+        // const material = this.materials.find(
+        //   (material) => material.id === productMaterial.material
+        // );
+        const material = this.materials[productMaterial.material.toString()];
 
-      if (material) {
-        carry.push({
-          ...material,
-          isMust: productMaterial.isMust,
-        });
-      }
-      return carry;
-    }, []);
+        if (material) {
+          carry.push({
+            material: material.id,
+            isMust: productMaterial.isMust,
+          });
+        }
+        return carry;
+      },
+      []
+    );
   }
 
-  get optionalProductMaterials(): Material[] {
+  get optionalProductMaterials(): ProductMaterial[] {
+    console.log(this.productMaterials);
+    console.log(this.productMaterials.filter((material) => !material.isMust));
     return this.productMaterials.filter((material) => !material.isMust);
   }
 
@@ -262,11 +269,10 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
     return this.selectedProduct ? this.selectedProduct.name : "";
   }
 
-  inputValidity(inputName: string): boolean{
+  inputValidity(inputName: string): boolean {
     // console.log(`${this[inputName]}`);
     // return this[inputName] === "";
     return `${this[inputName]}` === "";
-
   }
   productChangeHandler(event: Event): void {
     const selectedProductName = (event.target as HTMLInputElement).value;
@@ -290,25 +296,49 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
 
   updateOrder(): void {
     //todo: check id.toString()
-    this.selectedOptionalMaterials = this.selectedOptionalMaterials.map(
-      (selectedMaterial) =>
-        this.materials.find(
-          (material) => material.id.toString() === selectedMaterial
-        )
-    );
+
+    // this.selectedOptionalMaterials = this.selectedOptionalMaterials.map(
+    //   (selectedMaterial) =>
+    //     // this.materials.find(
+    //     //   (material) => material.id.toString() === selectedMaterial
+    //     // )
+    //     this.materials[selectedMaterial.name]
+    // );
+
+    this.selectedOptionalMaterials = this.selectedOptionalMaterials.reduce<
+      Array<Material>
+    >((carry, selectedMaterial) => {
+      if (selectedMaterial) {
+        carry.push(this.materials[selectedMaterial.name]);
+      }
+      return carry;
+    }, []);
+
     const mustMaterials = this.selectedProduct?.materials
       .filter((material) => material.isMust)
-      .map((mustMaterial) =>
-        this.materials.find((material) => material.id === mustMaterial.material)
-      );
+      .reduce<Array<Material>>((carry, material) => {
+        if (material) {
+          carry.push(this.materials[material.name]);
+        }
+        return carry;
+      }, []);
+    // .map(
+    //   (mustMaterial) =>
+    //     // this.materials.find((material) => material.id === mustMaterial.material)
+    //     this.materials[mustMaterial.material.toString()]
+    // );
+
     this.selectedOptionalMaterials = this.selectedOptionalMaterials.concat(
       mustMaterials
     );
+
     this.productsSummary.push({
       ...this.selectedProduct,
       materials: this.selectedOptionalMaterials,
     });
+    console.log(this.productsSummary);
     this.resetProduct();
+
   }
 
   resetProduct(): void {
@@ -442,8 +472,9 @@ export default class NewOrder extends Mixins(ResolveImageUrlMixin) {
   width: 40px;
 }
 .slot-image {
-  height: 97px;
+  height: 100px;
   width: 110px;
+  border-radius: inherit;
 }
 
 .invalid {

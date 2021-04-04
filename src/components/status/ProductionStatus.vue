@@ -35,10 +35,11 @@ export default class ProductionStatus extends Vue {
   @OrderModule.State((state) => state.currentOrderId)
   currentOrderIdState!: number;
   @SlotModule.State((state) => state.slots) slots!: Array<Slot>;
-  @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({
-    order: Order,
-    slotID: number,
-  }) => void;
+  // @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({
+  //   order: Order,
+  //   slotID: number,
+  // }) => void;
+  @SlotModule.Action("addNewOrderToSlotAction") addOrderToSlot!: ({order, slotID}:{order: Order, slotID: number}) => void;
 
   created(): void {
     console.log(this.currentOrderIdState);
