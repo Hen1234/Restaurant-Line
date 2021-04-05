@@ -23,4 +23,10 @@ import QueueStatus from "@/components/status/QueueStatus.vue";
 export default class Home extends Vue {}
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+</style>

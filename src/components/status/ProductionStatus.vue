@@ -7,7 +7,7 @@
       :key="slot.slotID"
       :ordersSlot="slot.orders"
       :slot-num="slot.slotID"
-      @vacantSlot="vacantSlot(event, slot.slotID)"
+      @vacantSlot="vacantSlotHandle($event)"
     />
   </div>
 </template>
@@ -30,7 +30,8 @@ const SlotModule = namespace("slot");
   },
 })
 export default class ProductionStatus extends Vue {
-  @OrderModule.Getter("readyToBeProduced") readyToBeProducedOrders!: Array<Order>;
+  @OrderModule.Getter("readyToBeProduced")
+  readyToBeProducedOrders!: Array<Order>;
   @OrderModule.Getter("BeingPrepared") BeingPreparedOrders!: Array<Order>;
   @OrderModule.State((state) => state.currentOrderId)
   currentOrderId!: number;
@@ -44,12 +45,16 @@ export default class ProductionStatus extends Vue {
   }) => void;
   @SlotModule.Action("addNewSlot") addNewSlot!: () => void;
 
-  @Watch("currentOrderId", { deep: true })
-  newOrderWatcher(newOrderId: number): void {
-    this.processNewOrder(newOrderId);
+  created(): void {
+    console.log("hereCreatedStatus");
   }
 
-  processNewOrder(orderID: number): void {
+  @Watch("currentOrderId", { deep: true })
+  newOrderWatcher(): void {
+    this.processNewOrder();
+  }
+
+  processNewOrder(): void {
     const vacantSlot = this.slots.find(
       (slot) =>
         slot.orders.length === 0 || slot.produceCapacity > slot.orders.length
@@ -57,69 +62,55 @@ export default class ProductionStatus extends Vue {
 
     if (vacantSlot) {
       this.addOrderToSlot({
-        order: this.readyToBeProducedOrders[this.readyToBeProducedOrders.length - 1],
+        order: this.readyToBeProducedOrders[
+          this.readyToBeProducedOrders.length - 1
+        ],
         slotID: vacantSlot.slotID,
       });
-      this.readyToBeProducedOrders[this.readyToBeProducedOrders.length - 1].status = OrderStatus.BeingPrepared;
+      this.readyToBeProducedOrders[
+        this.readyToBeProducedOrders.length - 1
+      ].status = OrderStatus.BeingPrepared;
     }
   }
 
-  vacantSlot(orderID: number, slotID: number): void {
-    console.log(orderID);
-    console.log(slotID)
-    console.log(this.BeingPreparedOrders)
+  vacantSlotHandle(event: { slotID: number; orderID: number }): void {
+    console.log("hereFunction");
+    console.log(event.orderID);
+    console.log(event.slotID);
+
     const preparedOrder = this.BeingPreparedOrders.find(
-      (order) => order.orderID === orderID
+      (order) => order.orderID === event.orderID
     );
     if (preparedOrder) {
       console.log("readeForDelivery");
       preparedOrder.status = OrderStatus.ReadyForDelivery;
     }
+    console.log(this.BeingPreparedOrders);
     if (this.readyToBeProducedOrders) {
       const unHandledOrder = this.readyToBeProducedOrders.find(
         (order) => order.status === OrderStatus.ReadyToBeProduced
       );
       if (unHandledOrder) {
         this.addOrderToSlot({
-          order: this.readyToBeProducedOrders[this.readyToBeProducedOrders.length - 1],
-          slotID: slotID,
+          order: this.readyToBeProducedOrders[
+            this.readyToBeProducedOrders.length - 1
+          ],
+          slotID: event.slotID,
         });
         unHandledOrder.status = OrderStatus.BeingPrepared;
       }
     }
   }
-  //   if (this.ordersState.length !== 0) {
-  //     if (this.slots[0].produceCapacity === this.slots[0].orders.length) {
-  //       this.addOrderToSlot({
-  //         order: this.ordersState[this.ordersState.length - 1],
-  //         slotID: 2,
-  //       });
-  //     } else {
-  //       this.addOrderToSlot({
-  //         order: this.ordersState[this.ordersState.length - 1],
-  //         slotID: 1,
-  //       });
-  //     }
-  //   }
-  // }
 }
 </script>
 
 <style scoped>
-.container {
-  flex: 1;
-}
 .header {
   font-size: 20px;
 }
-.noOrdersToShow {
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-  font-size: 15px;
-}
-
 .newSlotButton {
-  margin-left: 5px;
+  margin-top: 5px;
+  height: fit-content;
+  width: fit-content;
 }
 </style>

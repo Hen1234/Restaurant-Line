@@ -44,7 +44,6 @@ export default class MainLayout extends Vue {}
 
 .content {
   display: flex;
-  flex-direction: column;
   margin: 10px;
   flex: 1;
 }

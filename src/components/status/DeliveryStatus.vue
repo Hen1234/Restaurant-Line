@@ -10,6 +10,7 @@
         :inDelivery="delivery.inDelivery"
       >
       </delivery-item>
+      <button class="addButton" @click="addDelivery">Add New Delivery</button>
     </div>
   </div>
 </template>
@@ -29,6 +30,11 @@ const DeliveryModule = namespace("delivery");
 export default class DeliveryStatus extends Vue {
   @DeliveryModule.State((state) => state.deliveries)
   deliveries!: Array<Delivery>;
+  @DeliveryModule.Action("addNewDelivery") addNewDelivery!: void;
+
+  addDelivery(): void {
+    // this.addNewDelivery();
+  }
 }
 </script>
 
@@ -40,5 +46,8 @@ export default class DeliveryStatus extends Vue {
 .delivery-item {
   display: flex;
   justify-content: space-between;
+}
+.addButton {
+  margin-top: 5px;
 }
 </style>

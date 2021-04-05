@@ -46,10 +46,10 @@ export default class SlotItem extends Vue {
   ) => void;
 
   @Emit("vacantSlot")
-  vacantSlot($event, orderID: number): void {
-    this.$emit("vacantSlot", orderID)
-    console.log(`vacant slot${this.slotNum}`);
-
+  vacantSlot(orderID: number): void {
+    console.log(`orderID  from slot: ${orderID}`);
+    this.$emit("vacantSlot", { slotID: this.slotNum, orderID: orderID });
+    // console.log(`vacant slot${this.slotNum}`);
   }
   get orders(): Order[] {
     return this.slots[this.slotNum - 1].orders;
@@ -59,12 +59,9 @@ export default class SlotItem extends Vue {
   }
 
   deleteThisOrder(index: number, orderID: number): void {
-    console.log(orderID);
     console.log(`order ${index}is deleted`);
-    // this.ordersSlot.splice(this.ordersSlot[index]);
-    // this.ordersSlot[index] = undefined;
     this.deleteOrderFromSlot({ slotID: this.slotNum - 1, index });
-    this.vacantSlot(event, orderID);
+    this.vacantSlot(orderID);
     this.addNewDelivery({
       orderID,
       time: "00:00:00",
