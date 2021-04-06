@@ -38,20 +38,30 @@ export default class DeliveryStatus extends Vue {
   @OrderModule.Getter("ReadyForDelivery")
   ReadyForDeliveriesOrders!: Array<Order>;
   @DeliveryModule.Action("addNewDelivery") addNewDelivery!: () => void;
-  @DeliveryModule.Action("addOrderToDelivery") addOrderToDelivery !: void;
+  @DeliveryModule.Action("addOrderToDelivery") addOrderToDelivery!: void;
 
   //watch delivery orders
-  @Watch("ReadyForDelivery")
+  @Watch("ReadyForDeliveriesOrders")
   newOrderToDelivery(): void {
+    console.log("watchDelivery");
+    console.log(this.ReadyForDeliveriesOrders);
     this.addNewOrderToDelivery();
   }
 
   addNewOrderToDelivery() {
-    const availableDeliver = this.deliveries.find((delivery)=> !delivery.inDelivery);
-    if(availableDeliver){
-      this.addOrderToDelivery({deliveryID: availableDeliver.deliveryID, orderID:this.ReadyForDeliveriesOrders[this.ReadyForDeliveriesOrders.length-1].orderID })
-
+    const availableDeliver = this.deliveries.find(
+      (delivery) => !delivery.inDelivery
+    );
+    if (availableDeliver) {
+      console.log(this.ReadyForDeliveriesOrders);
+      this.addOrderToDelivery({
+        deliveryID: availableDeliver.deliveryID,
+        orderID: this.ReadyForDeliveriesOrders[
+          this.ReadyForDeliveriesOrders.length - 1
+        ].orderID,
+      });
     }
+    console.log(this.deliveries);
   }
 }
 </script>

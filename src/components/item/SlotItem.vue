@@ -62,12 +62,12 @@ export default class SlotItem extends Vue {
     console.log(`order ${index}is deleted`);
     this.deleteOrderFromSlot({ slotID: this.slotNum - 1, index });
     this.vacantSlot(orderID);
-    this.addNewDelivery({
-      orderID,
-      time: "00:00:00",
-      inDelivery: true,
-      isFailed: false,
-    });
+    // this.addNewDelivery({
+    //   orderID,
+    //   time: "00:00:00",
+    //   inDelivery: true,
+    //   isFailed: false,
+    // });
   }
 }
 </script>
