@@ -22,6 +22,7 @@ import SlotItem from "@/components/item/SlotItem.vue";
 
 const OrderModule = namespace("order");
 const SlotModule = namespace("slot");
+const DeliveryModule = namespace("delivery");
 @Component({
   name: "ProductionStatus",
   components: {

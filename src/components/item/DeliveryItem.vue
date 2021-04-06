@@ -1,10 +1,13 @@
 <template>
   <div class="container">
-    <div class="delivery-details">
+    <div v-if="orderID!==0" class="delivery-details">
       <div><span class="attribute">Order ID:</span> {{ orderID }}</div>
       <div><span class="attribute">Time Left:</span> {{ time }}</div>
     </div>
-    <div class="in-delivery" :v-if="inDelivery">
+    <div v-else>
+      Delivery {{deliveryID}}
+    </div>
+    <div class="in-delivery" v-if="inDelivery">
       <span>In delivery</span>
     </div>
   </div>
@@ -20,6 +23,7 @@ export default class DeliveryItem extends Vue {
   @Prop() orderID!: number;
   @Prop() time!: string;
   @Prop() inDelivery!: boolean;
+  @Prop() deliveryID!: number
 }
 </script>
 

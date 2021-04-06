@@ -11,4 +11,9 @@ export const getters: GetterTree<OrderStateInterface, AppState> = {
 
   BeingPrepared: (state) =>
     state.orders.filter((order) => order.status === OrderStatus.BeingPrepared),
+
+  ReadyForDelivery: (state) =>
+    state.orders.filter(
+      (order) => order.status === OrderStatus.ReadyForDelivery
+    ),
 };
